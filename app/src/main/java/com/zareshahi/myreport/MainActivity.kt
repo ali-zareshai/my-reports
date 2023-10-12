@@ -15,11 +15,14 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.zareshahi.myreport.database.AppDatabase
+import com.zareshahi.myreport.home.HomeScreen
 import com.zareshahi.myreport.ui.theme.MyReportTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AppDatabase.getInstance(applicationContext)
         setContent {
             MyReportTheme {
                 // A surface container using the 'background' color from the theme
@@ -30,7 +33,7 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     NavHost(navController = navController, startDestination = "home"){
                         composable(Routes.HOME.route){
-
+                            HomeScreen(navController = navController)
                         }
                     }
                 }
