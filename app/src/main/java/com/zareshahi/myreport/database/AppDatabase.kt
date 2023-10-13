@@ -21,21 +21,4 @@ import com.zareshahi.myreport.util.Converters
 abstract class AppDatabase:RoomDatabase() {
     abstract fun noteDao():NoteDao
 
-    companion object{
-        private var instance:AppDatabase?=null
-        private val databaseName ="com.zareshahi.myreport.database"
-
-        @Synchronized
-        fun getInstance(ctx: Context): AppDatabase {
-            if(instance == null)
-                instance = Room.databaseBuilder(ctx.applicationContext, AppDatabase::class.java,
-                    databaseName)
-                    .fallbackToDestructiveMigration()
-                    .build()
-
-            return instance!!
-        }
-
-
-    }
 }
