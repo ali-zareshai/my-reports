@@ -18,7 +18,8 @@ fun SimpleTopBar(
     title: String,
     colors: TopAppBarColors = TopAppBarDefaults.centerAlignedTopAppBarColors(),
     actions: @Composable RowScope.() -> Unit = {},
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit={},
+    isShowBackButton:Boolean=true
 ) {
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
         CenterAlignedTopAppBar(
@@ -30,11 +31,13 @@ fun SimpleTopBar(
                 )
             },
             navigationIcon = {
-                IconButton(onClick = { onBackClick() }) {
-                    Icon(
-                        Icons.Rounded.ArrowBack,
-                        contentDescription = "بازگشت"
-                    )
+                if (isShowBackButton){
+                    IconButton(onClick = { onBackClick() }) {
+                        Icon(
+                            Icons.Rounded.ArrowBack,
+                            contentDescription = "بازگشت"
+                        )
+                    }
                 }
             },
             actions = actions

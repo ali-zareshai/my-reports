@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Save
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -44,8 +45,8 @@ fun HomeScreen(navController: NavController,homeViewModel: HomeViewModel= koinVi
     Scaffold(
         topBar = {
             SimpleTopBar(
-                title = "گزارشات",
-                onBackClick = { navController.popBackStack() }
+                title = "گزارش کار",
+                isShowBackButton = false
             )
         },
         content = { ContentHome(paddingValues = it, navController) },
@@ -96,7 +97,7 @@ fun ContentHome(paddingValues: PaddingValues, navController: NavController, home
     Box(modifier = Modifier.padding(paddingValues)) {
         LazyColumn{
             itemsIndexed(items = reportList, key = {index,_->"$index"}){index,note->
-                MyCard(modifier = Modifier.padding(7.dp)) {
+                MyCard(modifier = Modifier.padding(7.dp).fillMaxWidth()) {
                     Text(text = note.note)
                 }
             }
@@ -112,7 +113,7 @@ private fun FabButtons(homeViewModel: HomeViewModel= koinViewModel()) {
         },
     ) {
         Icon(
-            imageVector = Icons.Rounded.Search, contentDescription = "ذخیره"
+            imageVector = Icons.Rounded.Save, contentDescription = "ذخیره"
         )
     }
 }

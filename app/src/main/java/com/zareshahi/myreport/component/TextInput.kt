@@ -13,7 +13,9 @@ import androidx.compose.foundation.text.KeyboardActionScope
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardVoice
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.rounded.KeyboardVoice
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -68,9 +70,12 @@ fun TextInput(
         placeholder = { Text("متن...", Modifier.fillMaxWidth(), maxLines = 1) },
         onValueChange = { onValueChange(it) },
         trailingIcon = {
-            Icon(Icons.Filled.Phone, contentDescription = "ثبت با صدا", Modifier.clickable {
-                voiceLauncher.launch(voiceIntent())
-            })
+            Icon(
+                Icons.Rounded.KeyboardVoice,
+                contentDescription = "ثبت با صدا",
+                Modifier.clickable {
+                    voiceLauncher.launch(voiceIntent())
+                })
         },
         colors = TextFieldDefaults.textFieldColors(
             focusedIndicatorColor = Color.Transparent,
