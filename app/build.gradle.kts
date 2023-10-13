@@ -74,6 +74,10 @@ dependencies {
     implementation("io.insert-koin:koin-android:3.5.0")
     implementation("io.insert-koin:koin-androidx-compose:3.5.0")
 
+    implementation("com.github.hamooo90:jalali-datepicker-compose:1.0.0")
+    implementation("ir.huri:JalaliCalendar:1.3.3")
+    implementation("com.marosseleng.android:compose-material3-datetime-pickers:0.7.2")
+
 
 
     testImplementation("junit:junit:4.13.2")

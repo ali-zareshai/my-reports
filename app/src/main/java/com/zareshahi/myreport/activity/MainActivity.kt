@@ -16,12 +16,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.zareshahi.myreport.navigation.Routes
-import com.zareshahi.myreport.database.AppDatabase
-import com.zareshahi.myreport.database.entrity.Note
-import com.zareshahi.myreport.home.HomeScreen
-import com.zareshahi.myreport.home.HomeViewModel
+import com.zareshahi.myreport.screen.AddNewReport
+import com.zareshahi.myreport.screen.HomeScreen
 import com.zareshahi.myreport.ui.theme.MyReportTheme
-import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,6 +34,9 @@ class MainActivity : ComponentActivity() {
                         NavHost(navController = navController, startDestination = "home") {
                             composable(Routes.HOME.route) {
                                 HomeScreen(navController = navController)
+                            }
+                            composable(Routes.ADD_REPORT.route){
+                                AddNewReport(navController = navController)
                             }
                         }
                     }

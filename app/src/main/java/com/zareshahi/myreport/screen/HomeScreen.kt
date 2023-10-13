@@ -1,4 +1,4 @@
-package com.zareshahi.myreport.home
+package com.zareshahi.myreport.screen
 
 import android.util.Log
 import androidx.compose.foundation.layout.Box
@@ -7,29 +7,24 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Save
-import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.zareshahi.myreport.component.TextInput
+import com.zareshahi.myreport.navigation.Routes
 import ir.esfandune.wave.compose.component.core.AnimatedContent
 import ir.esfandune.wave.compose.component.core.BottomCard
 import ir.esfandune.wave.compose.component.core.MyCard
@@ -51,7 +46,7 @@ fun HomeScreen(navController: NavController,homeViewModel: HomeViewModel= koinVi
         },
         content = { ContentHome(paddingValues = it, navController) },
         bottomBar = {
-            BottomBarHome()
+            BottomBarHome(navController)
         }
     )
     AnimatedContent(trueState = homeViewModel.isShowBottomSheet.value) {
@@ -66,7 +61,6 @@ fun HomeScreen(navController: NavController,homeViewModel: HomeViewModel= koinVi
                         value = homeViewModel.inputText.value,
                         onValueChange = {txt->
                             homeViewModel.inputText.value =txt
-                            Log.e("txt>>",txt)
                         }
                     )
                 }
@@ -76,16 +70,16 @@ fun HomeScreen(navController: NavController,homeViewModel: HomeViewModel= koinVi
 }
 
 @Composable
-fun BottomBarHome(homeViewModel: HomeViewModel= koinViewModel()) {
+fun BottomBarHome(navController: NavController, homeViewModel: HomeViewModel= koinViewModel()) {
     BottomAppBar(
         actions = {},
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    homeViewModel.isShowBottomSheet.value =true
+                    navController.navigate(Routes.ADD_REPORT.route)
                 }
             ) {
-                Icon(Icons.Filled.Add, "add")
+                Icon(Icons.Filled.Add, "گزارش کار جدید")
             }
         }
     )

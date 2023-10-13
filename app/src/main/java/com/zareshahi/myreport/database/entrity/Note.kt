@@ -14,8 +14,12 @@ data class Note constructor(
     var id:Long=0L,
     @ColumnInfo(name = "category_id")
     var catID:Long=1L,
+    @ColumnInfo(name = "sort_index")
+    var sortIndex:Int=0,
     @ColumnInfo(name = "note")
     var note:String,
+    @ColumnInfo(name = "duration")
+    var duration:Long=0L,
     @ColumnInfo(name="created_at")
     var createdAt:LocalDateTime= LocalDateTime.now()
 )

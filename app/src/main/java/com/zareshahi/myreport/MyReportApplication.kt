@@ -1,18 +1,14 @@
 package com.zareshahi.myreport
 
 import android.app.Application
-import android.util.Log
 import androidx.room.Room
 import com.zareshahi.myreport.database.AppDatabase
 import org.koin.android.ext.koin.androidContext
-import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
-import androidx.room.RoomDatabase.Callback
-import androidx.sqlite.db.SupportSQLiteDatabase
-import com.zareshahi.myreport.database.dao.NoteDao
 import com.zareshahi.myreport.database.repository.NoteRepository
-import com.zareshahi.myreport.home.HomeViewModel
+import com.zareshahi.myreport.screen.AddNewReportViewModel
+import com.zareshahi.myreport.screen.HomeViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 
 class MyReportApplication : Application() {
@@ -22,6 +18,9 @@ class MyReportApplication : Application() {
         val viewModeModule = module {
             viewModel{
                 HomeViewModel(get())
+            }
+            viewModel{
+                AddNewReportViewModel(get())
             }
         }
 
