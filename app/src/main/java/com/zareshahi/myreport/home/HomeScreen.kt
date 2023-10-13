@@ -10,14 +10,17 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavController){
+fun HomeScreen(navController: NavController,homeViewModel: HomeViewModel= koinViewModel()){
     Column {
         Text(text = "ali")
         TextField(value = "allli", onValueChange = {})
-        IconButton(onClick = { /*TODO*/ }) {
+        IconButton(onClick = {
+            homeViewModel.test()
+        }) {
             Icon(imageVector = Icons.Rounded.Home, contentDescription = "home")
         }
     }

@@ -64,11 +64,13 @@ dependencies {
     implementation("androidx.room:room-runtime:2.5.2")
     kapt("androidx.room:room-compiler:2.5.2")
     annotationProcessor("androidx.room:room-compiler:2.5.2")
+    implementation("androidx.room:room-ktx:2.5.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 
-    implementation("org.koin:koin-android-viewmodel:2.2.2")
-    implementation("org.koin:koin-android:2.2.2")
+    implementation("io.insert-koin:koin-core:3.5.0")
+    implementation("io.insert-koin:koin-android:3.5.0")
+    implementation("io.insert-koin:koin-androidx-compose:3.5.0")
 
 
 

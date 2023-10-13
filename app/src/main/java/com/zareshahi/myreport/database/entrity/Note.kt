@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 
 @Entity(tableName = "tb_note")
 data class Note constructor(
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     var id:Long=0L,
     @ColumnInfo(name = "category_id")

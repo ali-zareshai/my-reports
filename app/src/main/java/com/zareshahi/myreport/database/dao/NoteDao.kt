@@ -12,5 +12,5 @@ interface NoteDao {
     fun fetchNotesByCatID(cat:Long): List<Note>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addNewNote(note: Note)
+    suspend fun addNewNote(note: Note)
 }
