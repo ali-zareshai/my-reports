@@ -3,6 +3,7 @@ package com.zareshahi.myreport
 import android.app.Application
 import androidx.room.Room
 import com.zareshahi.myreport.database.AppDatabase
+import com.zareshahi.myreport.database.repository.CategoryRepository
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
@@ -17,7 +18,7 @@ class MyReportApplication : Application() {
 
         val viewModeModule = module {
             viewModel{
-                HomeViewModel(get())
+                HomeViewModel(get(),get())
             }
             viewModel{
                 AddNewReportViewModel(get())
@@ -38,6 +39,13 @@ class MyReportApplication : Application() {
             }
             single {
                 NoteRepository(get())
+            }
+            single {
+                val db =get<AppDatabase>()
+                db.categoryDao()
+            }
+            single {
+                CategoryRepository(get())
             }
         }
         startKoin {

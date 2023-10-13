@@ -8,17 +8,20 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.zareshahi.myreport.database.dao.CategoryDao
 import com.zareshahi.myreport.database.dao.NoteDao
+import com.zareshahi.myreport.database.entrity.Category
 import com.zareshahi.myreport.database.entrity.Note
 import com.zareshahi.myreport.util.Converters
 
 @Database(
-    entities = [Note::class],
+    entities = [Note::class,Category::class],
     version = 1,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase:RoomDatabase() {
     abstract fun noteDao():NoteDao
+    abstract fun categoryDao():CategoryDao
 
 }
