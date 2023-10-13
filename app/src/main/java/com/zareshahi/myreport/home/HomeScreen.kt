@@ -1,28 +1,80 @@
 package com.zareshahi.myreport.home
 
+import android.util.Log
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import ir.esfandune.wave.compose.component.core.MyCard
+import ir.esfandune.wave.compose.component.core.SimpleTopBar
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController,homeViewModel: HomeViewModel= koinViewModel()){
-    Column {
-        Text(text = "ali")
-        TextField(value = "allli", onValueChange = {})
-        IconButton(onClick = {
-            homeViewModel.test()
-        }) {
-            Icon(imageVector = Icons.Rounded.Home, contentDescription = "home")
+    LaunchedEffect(key1 = Unit){
+        homeViewModel.search()
+    }
+    Scaffold(
+        topBar = {
+            SimpleTopBar(
+                title = "گزارشات",
+                onBackClick = { navController.popBackStack() }
+            )
+        },
+        content = { ContentHome(paddingValues = it, navController) },
+        bottomBar = {
+            BottomBarHome()
+        }
+    )
+}
+
+@Composable
+fun BottomBarHome() {
+    BottomAppBar(
+        actions = {},
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    
+                }
+            ) {
+                Icon(Icons.Filled.Add, "add")
+            }
+        }
+    )
+}
+
+@Composable
+fun ContentHome(paddingValues: PaddingValues, navController: NavController, homeViewModel: HomeViewModel= koinViewModel()) {
+    val reportList =homeViewModel.reportList.collectAsState().value
+    Box(modifier = Modifier.padding(paddingValues)) {
+        LazyColumn{
+            itemsIndexed(items = reportList, key = {index,_->"$index"}){index,note->
+                MyCard(modifier = Modifier.padding(7.dp)) {
+                    Text(text = note.note)
+                }
+            }
         }
     }
-
 }

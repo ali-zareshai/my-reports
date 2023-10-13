@@ -5,4 +5,6 @@ import com.zareshahi.myreport.database.entrity.Note
 
 class NoteRepository(val noteDao: NoteDao) {
     suspend fun addNewNote(note: Note) =noteDao.addNewNote(note)
+
+    fun fetchNotesByCatID(catID:Long)=noteDao.fetchNotesByCatID(catID)
 }
