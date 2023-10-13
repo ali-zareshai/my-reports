@@ -20,7 +20,9 @@ class HomeViewModel(val noteRepository: NoteRepository):ViewModel() {
     private val _reportList = MutableStateFlow<List<Note>>(emptyList())
     val reportList =_reportList.asStateFlow()
 
-//    val searchWord = mutableStateOf("")
+    val isShowBottomSheet = mutableStateOf(false)
+
+    val inputText = mutableStateOf("")
 
     fun search(){
         viewModelScope.launch(Dispatchers.IO){

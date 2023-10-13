@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -11,6 +12,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -23,8 +25,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.zareshahi.myreport.component.TextInput
+import ir.esfandune.wave.compose.component.core.AnimatedContent
+import ir.esfandune.wave.compose.component.core.BottomCard
 import ir.esfandune.wave.compose.component.core.MyCard
 import ir.esfandune.wave.compose.component.core.SimpleTopBar
 import org.koin.androidx.compose.koinViewModel
@@ -47,16 +53,35 @@ fun HomeScreen(navController: NavController,homeViewModel: HomeViewModel= koinVi
             BottomBarHome()
         }
     )
+    AnimatedContent(trueState = homeViewModel.isShowBottomSheet.value) {
+        if (it){
+            BottomCard(
+                fabButtons = { FabButtons()},
+                onClose = { homeViewModel.isShowBottomSheet.value =false}
+            ) {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    TextInput(
+                        modifier=Modifier.fillMaxWidth().padding(7.dp),
+                        value = homeViewModel.inputText.value,
+                        onValueChange = {txt->
+                            homeViewModel.inputText.value =txt
+                            Log.e("txt>>",txt)
+                        }
+                    )
+                }
+            }
+        }
+    }
 }
 
 @Composable
-fun BottomBarHome() {
+fun BottomBarHome(homeViewModel: HomeViewModel= koinViewModel()) {
     BottomAppBar(
         actions = {},
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    
+                    homeViewModel.isShowBottomSheet.value =true
                 }
             ) {
                 Icon(Icons.Filled.Add, "add")
@@ -76,5 +101,18 @@ fun ContentHome(paddingValues: PaddingValues, navController: NavController, home
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun FabButtons(homeViewModel: HomeViewModel= koinViewModel()) {
+    FloatingActionButton(
+        onClick = {
+
+        },
+    ) {
+        Icon(
+            imageVector = Icons.Rounded.Search, contentDescription = "ذخیره"
+        )
     }
 }
