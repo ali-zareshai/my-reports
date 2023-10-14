@@ -27,8 +27,8 @@ class AddNewReportViewModel(val noteRepository: NoteRepository,val categoryRepos
     val selectedLocalTime = mutableStateOf<LocalTime>(LocalTime.now())
     val selectedCategory = mutableStateOf<Category?>(null)
 
-    val durationTime = mutableStateOf<Int?>(null)
-    val durationType = mutableStateOf(1)
+    val durationMinuteTime = mutableStateOf(0)
+    val durationHoursTime = mutableStateOf(0)
 
     val newTxt = mutableStateOf("")
     private val _listWorks = MutableStateFlow<List<TempNote>>(emptyList())
@@ -58,7 +58,7 @@ class AddNewReportViewModel(val noteRepository: NoteRepository,val categoryRepos
                     note = item.note?:"--",
                     createdAt = LocalDateTime.of(item.zonedDateTime?.toLocalDate(),item.localTime),
                     catID = selectedCategory.value?.id,
-                    duration = ((durationTime.value?:0)*durationType.value).toLong()
+                    duration = "${durationHoursTime.value}:${durationMinuteTime.value}"
                 )
                 noteRepository.addNewNote(note)
             }

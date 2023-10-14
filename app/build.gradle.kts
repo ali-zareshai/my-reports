@@ -77,6 +77,7 @@ dependencies {
     implementation("com.github.hamooo90:jalali-datepicker-compose:1.0.0")
     implementation("ir.huri:JalaliCalendar:1.3.3")
     implementation("com.marosseleng.android:compose-material3-datetime-pickers:0.7.2")
+    implementation("com.github.samanzamani:PersianDate:1.7.1")
 
 
 

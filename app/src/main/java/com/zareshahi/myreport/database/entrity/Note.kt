@@ -19,7 +19,7 @@ data class Note constructor(
     @ColumnInfo(name = "note")
     var note:String,
     @ColumnInfo(name = "duration")
-    var duration:Long=0L,
+    var duration:String?,
     @ColumnInfo(name="created_at")
     var createdAt:LocalDateTime= LocalDateTime.now()
 )

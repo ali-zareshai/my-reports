@@ -210,28 +210,33 @@ fun ContentAdd(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(text = "مدت زمان:")
                     Row(verticalAlignment = Alignment.CenterVertically){
-                        TextField(
-                            value = if(screenVM.durationTime.value==null) "" else screenVM.durationTime.value.toString(),
-                            onValueChange = {
-                                if (it.length<=2)
-                                    screenVM.durationTime.value =it.toInt()
-                            },
-                            keyboardOptions= KeyboardOptions(keyboardType = KeyboardType.Number),
-                            singleLine = true,
-                            modifier = Modifier
-                                .padding(7.dp)
-                                .weight(1f)
-                        )
-                        Column(modifier = Modifier.weight(1f)) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                RadioButton(selected = screenVM.durationType.value==1, onClick = { screenVM.durationType.value=1 })
-                                Text(text = "دقیقه")
-                            }
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                RadioButton(selected = screenVM.durationType.value==60, onClick = { screenVM.durationType.value=60 })
-                                Text(text = "ساعت")
-                            }
+                        Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
+                            TextField(
+                                value = if(screenVM.durationMinuteTime.value==null) "" else screenVM.durationMinuteTime.value.toString(),
+                                onValueChange = {
+                                    if (it.length<=2 && it.toInt()<60)
+                                        screenVM.durationMinuteTime.value =it.toInt()
+                                },
+                                keyboardOptions= KeyboardOptions(keyboardType = KeyboardType.Number),
+                                singleLine = true,
+                                modifier = Modifier.padding(7.dp)
+                            )
+                            Text(text = "دقیقه")
                         }
+                        Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
+                            TextField(
+                                value = if(screenVM.durationHoursTime.value==null) "" else screenVM.durationHoursTime.value.toString(),
+                                onValueChange = {
+                                    if (it.length<=3)
+                                        screenVM.durationHoursTime.value =it.toInt()
+                                },
+                                keyboardOptions= KeyboardOptions(keyboardType = KeyboardType.Number),
+                                singleLine = true,
+                                modifier = Modifier.padding(7.dp)
+                            )
+                            Text(text = "ساعت")
+                        }
+                        
                     }
                 }
             }
