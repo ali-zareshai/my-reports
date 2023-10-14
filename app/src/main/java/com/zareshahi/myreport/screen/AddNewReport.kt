@@ -69,7 +69,7 @@ import org.koin.androidx.compose.koinViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddNewReport(navController: NavController, screenVM: AddNewReportViewModel = koinViewModel()) {
-    LaunchedEffect(key1 = Unit){
+    LaunchedEffect(key1 = Unit) {
         screenVM.getListCategory()
     }
     Scaffold(
@@ -113,16 +113,16 @@ fun AddNewReport(navController: NavController, screenVM: AddNewReportViewModel =
 }
 
 @Composable
-fun BottomBarAdd(navController: NavController,screenVM: AddNewReportViewModel = koinViewModel()) {
-    val context =LocalContext.current
+fun BottomBarAdd(navController: NavController, screenVM: AddNewReportViewModel = koinViewModel()) {
+    val context = LocalContext.current
     BottomAppBar(
         actions = {},
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    if (screenVM.listWorks.value.isEmpty()){
-                        Toast.makeText(context,"لیست خالی است",Toast.LENGTH_LONG).show()
-                    }else{
+                    if (screenVM.listWorks.value.isEmpty()) {
+                        Toast.makeText(context, "لیست خالی است", Toast.LENGTH_LONG).show()
+                    } else {
                         screenVM.save()
                         navController.navigate(Routes.HOME.route)
                     }
@@ -186,13 +186,15 @@ fun ContentAdd(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(7.dp),
-                thickness=1.5.dp,
+                thickness = 1.5.dp,
                 color = MaterialTheme.colorScheme.primary
             )
-            
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .padding(7.dp)) {
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(7.dp)
+            ) {
                 Column(modifier = Modifier.weight(1f)) {
                     val isOpenDropMenu = rememberSaveable {
                         mutableStateOf(false)
@@ -204,39 +206,47 @@ fun ContentAdd(
                     ) {
                         Text(text = screenVM.selectedCategory.value?.name ?: "انتخاب نشده")
                     }
-                    
-                    CategoryDropMenu(isOpenDropMenu =isOpenDropMenu)
+
+                    CategoryDropMenu(isOpenDropMenu = isOpenDropMenu)
                 }
                 Column(modifier = Modifier.weight(1f)) {
                     Text(text = "مدت زمان:")
-                    Row(verticalAlignment = Alignment.CenterVertically){
-                        Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Column(
+                            modifier = Modifier.weight(1f),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
                             TextField(
-                                value = if(screenVM.durationMinuteTime.value==null) "" else screenVM.durationMinuteTime.value.toString(),
+                                value = if (screenVM.durationMinuteTime.value == null) "" else screenVM.durationMinuteTime.value.toString(),
                                 onValueChange = {
-                                    if (it.length<=2 && it.toInt()<60)
-                                        screenVM.durationMinuteTime.value =it.toInt()
+                                    if (it.isNotBlank() && it.toInt() < 60)
+                                        screenVM.durationMinuteTime.value = it
+                                    else
+                                        screenVM.durationMinuteTime.value = ""
                                 },
-                                keyboardOptions= KeyboardOptions(keyboardType = KeyboardType.Number),
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                 singleLine = true,
                                 modifier = Modifier.padding(7.dp)
                             )
                             Text(text = "دقیقه")
                         }
-                        Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
+                        Column(
+                            modifier = Modifier.weight(1f),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
                             TextField(
-                                value = if(screenVM.durationHoursTime.value==null) "" else screenVM.durationHoursTime.value.toString(),
+                                value = if (screenVM.durationHoursTime.value == null) "" else screenVM.durationHoursTime.value.toString(),
                                 onValueChange = {
-                                    if (it.length<=3)
-                                        screenVM.durationHoursTime.value =it.toInt()
+                                    if (it.length <= 3)
+                                        screenVM.durationHoursTime.value = it
                                 },
-                                keyboardOptions= KeyboardOptions(keyboardType = KeyboardType.Number),
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                 singleLine = true,
                                 modifier = Modifier.padding(7.dp)
                             )
                             Text(text = "ساعت")
                         }
-                        
+
                     }
                 }
             }
@@ -245,7 +255,7 @@ fun ContentAdd(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(7.dp),
-                thickness=1.5.dp,
+                thickness = 1.5.dp,
                 color = MaterialTheme.colorScheme.primary
             )
 
@@ -286,7 +296,11 @@ fun ContentAdd(
                             .padding(7.dp)
                     ) {
 //                        Text(text = "${index+1}")
-                        Text(text = item.note?:"--", fontSize = 21.sp, modifier = Modifier.weight(3f))
+                        Text(
+                            text = item.note ?: "--",
+                            fontSize = 21.sp,
+                            modifier = Modifier.weight(3f)
+                        )
                         IconButton(onClick = { screenVM.deleteItemFromList(item) }) {
                             Icon(
                                 imageVector = Icons.Rounded.Delete,
@@ -304,10 +318,12 @@ fun ContentAdd(
 }
 
 @Composable
-private fun CategoryDropMenu(isOpenDropMenu: MutableState<Boolean>,
-                             screenVM: AddNewReportViewModel= koinViewModel()){
-    val  categoryList =screenVM.categoryList.collectAsState().value
-    
+private fun CategoryDropMenu(
+    isOpenDropMenu: MutableState<Boolean>,
+    screenVM: AddNewReportViewModel = koinViewModel()
+) {
+    val categoryList = screenVM.categoryList.collectAsState().value
+
     DropdownMenu(
         expanded = isOpenDropMenu.value,
         onDismissRequest = { isOpenDropMenu.value = false }
@@ -317,13 +333,13 @@ private fun CategoryDropMenu(isOpenDropMenu: MutableState<Boolean>,
                 DropdownMenuItem(
                     text = {
                         Text(
-                            text = category.name?:"نامشخص",
+                            text = category.name ?: "نامشخص",
                             textAlign = TextAlign.Start,
                             modifier = Modifier.fillMaxWidth()
                         )
                     },
                     onClick = {
-                        screenVM.selectedCategory.value =category
+                        screenVM.selectedCategory.value = category
                         isOpenDropMenu.value = false
                     },
                     modifier = Modifier.padding(3.dp)

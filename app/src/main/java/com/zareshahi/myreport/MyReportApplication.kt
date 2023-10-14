@@ -10,7 +10,9 @@ import org.koin.dsl.module
 import com.zareshahi.myreport.database.repository.NoteRepository
 import com.zareshahi.myreport.screen.AddNewReportViewModel
 import com.zareshahi.myreport.screen.HomeViewModel
+import com.zareshahi.myreport.util.PersianDateTime
 import org.koin.androidx.viewmodel.dsl.viewModel
+import saman.zamani.persiandate.PersianDate
 
 class MyReportApplication : Application() {
     override fun onCreate() {
@@ -32,6 +34,9 @@ class MyReportApplication : Application() {
                     klass = AppDatabase::class.java,
                     name = "com.zareshahi.myreport.database"
                 ).build()
+            }
+            single {
+                PersianDateTime()
             }
             single {
                 val db =get<AppDatabase>()

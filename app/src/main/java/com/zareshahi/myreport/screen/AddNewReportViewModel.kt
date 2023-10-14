@@ -12,23 +12,27 @@ import java.time.LocalTime
 import java.time.ZonedDateTime
 import com.zareshahi.myreport.database.entrity.Note
 import com.zareshahi.myreport.database.repository.CategoryRepository
+import com.zareshahi.myreport.util.PersianDateTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+import org.koin.java.KoinJavaComponent.inject
 import java.time.LocalDateTime
 
-class AddNewReportViewModel(val noteRepository: NoteRepository,val categoryRepository: CategoryRepository): ViewModel() {
+class AddNewReportViewModel(val noteRepository: NoteRepository,
+                            val categoryRepository: CategoryRepository): ViewModel() {
+    val persianDateTime: PersianDateTime? by inject(PersianDateTime::class.java)
     val isShowDatePicker = mutableStateOf(false)
     val isShowTimePicker = mutableStateOf(false)
 
-    val selectedDate = mutableStateOf("")
-    val selectedTime = mutableStateOf("")
+    val selectedDate = mutableStateOf(persianDateTime?.getCurrentDate()?:"")
+    val selectedTime = mutableStateOf(persianDateTime?.getCurrentTime()?:"")
     val selectedZoneDateTime = mutableStateOf<ZonedDateTime>(ZonedDateTime.now())
     val selectedLocalTime = mutableStateOf<LocalTime>(LocalTime.now())
     val selectedCategory = mutableStateOf<Category?>(null)
 
-    val durationMinuteTime = mutableStateOf(0)
-    val durationHoursTime = mutableStateOf(0)
+    val durationMinuteTime = mutableStateOf("")
+    val durationHoursTime = mutableStateOf("")
 
     val newTxt = mutableStateOf("")
     private val _listWorks = MutableStateFlow<List<TempNote>>(emptyList())
