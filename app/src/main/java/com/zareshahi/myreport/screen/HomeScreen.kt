@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -31,16 +32,22 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.zareshahi.myreport.component.TextInput
 import com.zareshahi.myreport.navigation.Routes
+import com.zareshahi.myreport.util.PersianDateTime
 import ir.esfandune.wave.compose.component.core.AnimatedContent
 import ir.esfandune.wave.compose.component.core.BottomCard
 import ir.esfandune.wave.compose.component.core.MyCard
 import ir.esfandune.wave.compose.component.core.SimpleTopBar
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
+import java.time.ZoneId
+import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -182,7 +189,8 @@ fun BottomBarHome(navController: NavController, screenVM: HomeViewModel = koinVi
 fun ContentHome(
     paddingValues: PaddingValues,
     navController: NavController,
-    homeViewModel: HomeViewModel = koinViewModel()
+    homeViewModel: HomeViewModel = koinViewModel(),
+    persianDateTime:PersianDateTime= koinInject()
 ) {
     val reportList = homeViewModel.reportList.collectAsState().value
     Box(modifier = Modifier.padding(paddingValues)) {
@@ -193,7 +201,23 @@ fun ContentHome(
                         .padding(7.dp)
                         .fillMaxWidth()
                 ) {
-                    Text(text = note.note.note)
+                    Text(
+                        text = note.note.note,
+                        minLines = 2,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(7.dp)
+                    )
+                    Row(modifier = Modifier.padding(7.dp)) {
+                        Text(
+                            text = "${persianDateTime.convertDateToPersianDate(note.note.createdAt)}",
+                            modifier = Modifier.padding(7.dp).weight(1f)
+                        ) 
+                        Text(
+                            text = note.category?.name?:"پیش فرض",
+                            textAlign=TextAlign.End,
+                            modifier = Modifier.padding(7.dp).weight(1f)
+                        )
+                    }
                 }
             }
         }
