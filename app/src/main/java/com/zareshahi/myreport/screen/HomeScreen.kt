@@ -193,7 +193,7 @@ fun ContentHome(
                         .padding(7.dp)
                         .fillMaxWidth()
                 ) {
-                    Text(text = note.note)
+                    Text(text = note.note.note)
                 }
             }
         }
