@@ -21,7 +21,7 @@ class MyReportApplication : Application() {
                 HomeViewModel(get(),get())
             }
             viewModel{
-                AddNewReportViewModel(get())
+                AddNewReportViewModel(get(),get())
             }
         }
 

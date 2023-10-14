@@ -1,21 +1,16 @@
 package com.zareshahi.myreport.screen
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.rounded.Delete
@@ -124,8 +119,12 @@ private fun CategoryBottomSheet(homeViewModel: HomeViewModel = koinViewModel()) 
                 thickness = 1.5.dp,
                 color = MaterialTheme.colorScheme.primary
             )
-            LazyColumn(modifier = Modifier.fillMaxWidth().heightIn(max = 300.dp)){
-                items(items=catList,key={item->"${item.id}"}){
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 300.dp)
+            ) {
+                items(items = catList, key = { item -> "${item.id}" }) {
                     MyCard(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -200,6 +199,7 @@ fun ContentHome(
         }
     }
 }
+
 
 //@Composable
 //private fun FabButtons(homeViewModel: HomeViewModel= koinViewModel()) {

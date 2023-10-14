@@ -13,7 +13,7 @@ data class Note constructor(
     @ColumnInfo(name = "id")
     var id:Long=0L,
     @ColumnInfo(name = "category_id")
-    var catID:Long=1L,
+    var catID:Long?=null,
     @ColumnInfo(name = "sort_index")
     var sortIndex:Int=0,
     @ColumnInfo(name = "note")
