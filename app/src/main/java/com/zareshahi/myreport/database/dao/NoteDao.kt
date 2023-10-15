@@ -20,6 +20,9 @@ interface NoteDao {
     @Query("SELECT * FROM tb_note ORDER BY created_at")
     fun fetchAllNotes(): Flow<List<Note>?>
 
+    @Query("SELECT * FROM tb_note WHERE id=:id")
+    fun fetchNoteWithCategoryByID(id:Long): Flow<NoteWithCategory?>
+
     @RawQuery(observedEntities = [Note::class])
     fun fetchNotes(simpleSQLiteQuery: SimpleSQLiteQuery):Flow<List<NoteWithCategory>?>
 

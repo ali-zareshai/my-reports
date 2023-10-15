@@ -15,6 +15,12 @@ class NoteRepository(val noteDao: NoteDao) {
 
     fun fetchAllNotes()=noteDao.fetchAllNotes()
 
+    fun fetchNoteWithCategoryByID(id:Long)=noteDao.fetchNoteWithCategoryByID(id)
+
+    suspend fun updateNote(note: Note)=noteDao.updateNote(note)
+
+    suspend fun deleteNote(note: Note)=noteDao.deleteNote(note)
+
     fun fetchNotes(catID:Long?): Flow<List<NoteWithCategory>?> {
         val query ="""
             SELECT * FROM tb_note 

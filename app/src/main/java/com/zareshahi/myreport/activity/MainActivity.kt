@@ -35,8 +35,9 @@ class MainActivity : ComponentActivity() {
                             composable(Routes.HOME.route) {
                                 HomeScreen(navController = navController)
                             }
-                            composable(Routes.ADD_REPORT.route){
-                                AddNewReport(navController = navController)
+                            composable("${Routes.ADD_REPORT.route}?id={id}"){navBackStackEntry->
+                                val id = navBackStackEntry.arguments?.getString("id")?.toLongOrNull()
+                                AddNewReport(id =id,navController = navController)
                             }
                         }
                     }

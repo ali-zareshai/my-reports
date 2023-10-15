@@ -20,10 +20,24 @@ class PersianDateTime {
         return pdformater.format(pdate)
     }
 
-    fun convertDateToPersianDate(localDateTime: LocalDateTime): String? {
+    fun convertDateToPersianDateWeekDay(localDateTime: LocalDateTime): String {
         val date =Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant())
         val pDate =PersianDate(date)
         val pdformater = PersianDateFormat("j/F/Y l")
+        return pdformater.format(pDate)
+    }
+
+    fun convertDateToPersianDate(localDateTime: LocalDateTime): String {
+        val date =Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant())
+        val pDate =PersianDate(date)
+        val pdformater = PersianDateFormat("j/F/Y")
+        return pdformater.format(pDate)
+    }
+
+    fun convertDateToPersianTime(localDateTime: LocalDateTime): String {
+        val date =Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant())
+        val pDate =PersianDate(date)
+        val pdformater = PersianDateFormat("H:i")
         return pdformater.format(pDate)
     }
 }

@@ -22,7 +22,11 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.AddCircle
+import androidx.compose.material.icons.rounded.Cancel
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Done
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
@@ -68,16 +72,31 @@ import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddNewReport(navController: NavController, screenVM: AddNewReportViewModel = koinViewModel()) {
+fun AddNewReport(id:Long?,navController: NavController, screenVM: AddNewReportViewModel = koinViewModel()) {
+    val context = LocalContext.current
     LaunchedEffect(key1 = Unit) {
         screenVM.getListCategory()
+        id?.let {
+            screenVM.getReportForEdit(it)
+        }
     }
     Scaffold(
         topBar = {
             SimpleTopBar(
                 title = "گزارش کار جدید",
                 onBackClick = { navController.popBackStack() },
-                isShowBackButton = true
+                isShowBackButton = true,
+                actions = {
+                    if (screenVM.isEditMode.value){
+                        IconButton(onClick = { screenVM.isShowDeleteNoteDialog.value=true }) {
+                            Icon(
+                                imageVector = Icons.Rounded.Delete,
+                                contentDescription ="حذف گزارش",
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    }
+                }
             )
         },
         content = { ContentAdd(paddingValues = it, navController) },
@@ -107,6 +126,37 @@ fun AddNewReport(navController: NavController, screenVM: AddNewReportViewModel =
                     screenVM.isShowTimePicker.value = false
                 },
                 is24HourFormat = true
+            )
+        }
+    }
+
+    AnimatedContent(trueState = screenVM.isShowDeleteNoteDialog.value) {
+        if (it){
+            AlertDialog(
+                onDismissRequest = { screenVM.isShowDeleteNoteDialog.value =false },
+                confirmButton = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        TextButton(onClick = {
+                            screenVM.delete()
+                            screenVM.isShowDeleteNoteDialog.value =false
+                            Toast.makeText(context,"حذف شد",Toast.LENGTH_LONG).show()
+                            navController.popBackStack()
+                        }) {
+                           Icon(imageVector = Icons.Rounded.Done,"بله", tint = MaterialTheme.colorScheme.error)
+                            Text(text = "بله")
+                        }
+                        TextButton(onClick = { screenVM.isShowDeleteNoteDialog.value =false }) {
+                            Icon(imageVector = Icons.Rounded.Cancel,"خیر")
+                            Text(text = "خیر")
+                        }
+                    }
+                },
+                title = {
+                    Text(text = "آیا مطمئن هستید؟")
+                },
+                text = {
+                    Text("آیا می خواهید این گزارش حذف گردد؟")
+                }
             )
         }
     }
@@ -141,6 +191,7 @@ fun ContentAdd(
     navController: NavController,
     screenVM: AddNewReportViewModel = koinViewModel()
 ) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .padding(paddingValues)
@@ -204,7 +255,7 @@ fun ContentAdd(
                         modifier = Modifier.padding(7.dp),
                         onClick = { isOpenDropMenu.value = true }
                     ) {
-                        Text(text = screenVM.selectedCategory.value?.name ?: "انتخاب نشده")
+                        Text(text = screenVM.selectedCategory.value?.name ?: "پیش فرض")
                     }
 
                     CategoryDropMenu(isOpenDropMenu = isOpenDropMenu)
@@ -273,10 +324,22 @@ fun ContentAdd(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(14.dp),
-                onClick = { screenVM.addNewWork() }
+                onClick = {
+                    if (screenVM.isEditMode.value){
+                        screenVM.edit()
+                        Toast.makeText(context,"ویرایش شد",Toast.LENGTH_LONG).show()
+                        navController.popBackStack()
+                    }else
+                        screenVM.addNewWork()
+                }
             ) {
-                Icon(imageVector = Icons.Rounded.Add, contentDescription = "اضافه")
-                Text(text = "اضافه کردن")
+                if (screenVM.isEditMode.value){
+                    Icon(imageVector = Icons.Rounded.Edit, contentDescription = "آپدیت")
+                    Text(text = "آپدیت")
+                }else{
+                    Icon(imageVector = Icons.Rounded.Add, contentDescription = "اضافه")
+                    Text(text = "اضافه کردن")
+                }
             }
 
 

@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import java.time.LocalTime
 import java.time.ZonedDateTime
 import com.zareshahi.myreport.database.entrity.Note
+import com.zareshahi.myreport.database.entrity.NoteWithCategory
 import com.zareshahi.myreport.database.repository.CategoryRepository
 import com.zareshahi.myreport.util.PersianDateTime
 import kotlinx.coroutines.Dispatchers
@@ -18,12 +19,17 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.koin.java.KoinJavaComponent.inject
 import java.time.LocalDateTime
+import java.time.ZoneId
 
 class AddNewReportViewModel(val noteRepository: NoteRepository,
                             val categoryRepository: CategoryRepository): ViewModel() {
     val persianDateTime: PersianDateTime? by inject(PersianDateTime::class.java)
     val isShowDatePicker = mutableStateOf(false)
     val isShowTimePicker = mutableStateOf(false)
+    val isShowDeleteNoteDialog = mutableStateOf(false)
+    val selectedNoteCategoryForEdit = mutableStateOf<NoteWithCategory?>(null)
+
+    val isEditMode = mutableStateOf(false)
 
     val selectedDate = mutableStateOf(persianDateTime?.getCurrentDate()?:"")
     val selectedTime = mutableStateOf(persianDateTime?.getCurrentTime()?:"")
@@ -69,6 +75,29 @@ class AddNewReportViewModel(val noteRepository: NoteRepository,
         }
     }
 
+    fun edit(){
+        viewModelScope.launch(Dispatchers.IO){
+            selectedNoteCategoryForEdit.value?.let {note1->
+                val noteEdited =note1.note.apply {
+                    note = newTxt.value
+                    createdAt = LocalDateTime.of(selectedZoneDateTime.value.toLocalDate(),selectedLocalTime.value)
+                    catID = selectedCategory.value?.id
+                    duration = "${durationHoursTime.value}:${durationMinuteTime.value}"
+                }
+                noteRepository.updateNote(noteEdited)
+            }
+
+        }
+    }
+
+    fun delete(){
+        viewModelScope.launch(Dispatchers.IO){
+            selectedNoteCategoryForEdit.value?.let {
+                noteRepository.deleteNote(it.note)
+            }
+        }
+    }
+
     fun deleteItemFromList(tempNote: TempNote){
         val listWork =_listWorks.value.toMutableList()
         listWork.remove(tempNote)
@@ -82,6 +111,29 @@ class AddNewReportViewModel(val noteRepository: NoteRepository,
                 .collect{
                     it?.let {cats->
                         _categoryList.value =cats
+                    }
+                }
+        }
+    }
+
+    fun getReportForEdit(id:Long){
+        viewModelScope.launch(Dispatchers.IO){
+            noteRepository.fetchNoteWithCategoryByID(id)
+                .distinctUntilChanged()
+                .collect{
+                    it?.let {note->
+                        selectedNoteCategoryForEdit.value =note
+                        isEditMode.value =true
+                        newTxt.value =note.note.note
+                        selectedDate.value =persianDateTime?.convertDateToPersianDate(note.note.createdAt)?:""
+                        selectedTime.value =persianDateTime?.convertDateToPersianTime(note.note.createdAt)?:""
+                        selectedZoneDateTime.value =ZonedDateTime.of(note.note.createdAt, ZoneId.systemDefault())
+                        selectedLocalTime.value =note.note.createdAt.toLocalTime()
+                        selectedCategory.value =note.category
+                        val durations =note.note.duration?.split(":")
+                        durationMinuteTime.value =durations?.getOrNull(1)?:""
+                        durationHoursTime.value =durations?.getOrNull(0)?:""
+
                     }
                 }
         }
