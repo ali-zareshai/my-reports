@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 fun TextInput(
     modifier: Modifier = Modifier,
     value: String,
+    placeholderText:String="متن...",
     onDone: (KeyboardActionScope.() -> Unit)? = null,
     onValueChange: (String) -> Unit = {}
 ) {
@@ -67,7 +68,7 @@ fun TextInput(
         value = value,
         keyboardActions = KeyboardActions(onSearch = onDone),
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
-        placeholder = { Text("متن...", Modifier.fillMaxWidth(), maxLines = 1) },
+        placeholder = { Text(placeholderText, Modifier.fillMaxWidth(), maxLines = 1) },
         onValueChange = { onValueChange(it) },
         trailingIcon = {
             Icon(

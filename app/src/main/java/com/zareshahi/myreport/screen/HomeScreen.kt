@@ -14,9 +14,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.rounded.Cancel
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material.icons.rounded.Save
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,6 +29,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -70,6 +74,41 @@ fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel = koin
             CategoryBottomSheet()
         }
     }
+
+    AnimatedContent(trueState = homeViewModel.isShowDeleteCategory.value) {
+        if (it)
+            DeleteCategoryDialog()
+    }
+}
+
+@Composable
+fun DeleteCategoryDialog(homeViewModel: HomeViewModel = koinViewModel()) {
+    val context = LocalContext.current
+    AlertDialog(
+        onDismissRequest = { homeViewModel.isShowDeleteCategory.value =false },
+        confirmButton = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                TextButton(onClick = {
+                    homeViewModel.deleteCategory()
+                    homeViewModel.isShowDeleteCategory.value =false
+                    Toast.makeText(context,"حذف شد",Toast.LENGTH_LONG).show()
+                }) {
+                    Icon(imageVector = Icons.Rounded.Done,"بله", tint = MaterialTheme.colorScheme.error)
+                    Text(text = "بله")
+                }
+                TextButton(onClick = { homeViewModel.isShowDeleteCategory.value =false }) {
+                    Icon(imageVector = Icons.Rounded.Cancel,"خیر")
+                    Text(text = "خیر")
+                }
+            }
+        },
+        title = {
+            Text(text = "آیا مطمئن هستید؟")
+        },
+        text = {
+            Text("آیا می خواهید این دسته حذف گردد؟")
+        }
+    )
 }
 
 @Composable
@@ -86,20 +125,22 @@ private fun CategoryBottomSheet(homeViewModel: HomeViewModel = koinViewModel()) 
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
+            Text(text = "مدیریت دسته ها")
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(7.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+
                 TextInput(
                     modifier = Modifier.weight(3f),
                     value = homeViewModel.categoryInputText.value,
                     onValueChange = { txt ->
                         homeViewModel.categoryInputText.value = txt
                     },
-
-                    )
+                    placeholderText = "نام دسته"
+                )
                 IconButton(onClick = {
                     if (homeViewModel.categoryInputText.value.isEmpty()) {
                         Toast.makeText(
@@ -127,7 +168,7 @@ private fun CategoryBottomSheet(homeViewModel: HomeViewModel = koinViewModel()) 
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(max = 300.dp)
+                    .heightIn(max = 300.dp, min = 300.dp)
             ) {
                 items(items = catList, key = { item -> "${item.id}" }) {
                     MyCard(
@@ -147,7 +188,10 @@ private fun CategoryBottomSheet(homeViewModel: HomeViewModel = koinViewModel()) 
                                     .weight(3f)
                                     .padding(7.dp)
                             )
-                            IconButton(onClick = { homeViewModel.deleteCategory(it) }) {
+                            IconButton(onClick = {
+                                homeViewModel.selectedCategoryForDelete.value =it
+                                homeViewModel.isShowDeleteCategory.value =true
+                            }) {
                                 Icon(
                                     imageVector = Icons.Rounded.Delete,
                                     contentDescription = "حذف دسته",
@@ -198,7 +242,7 @@ fun ContentHome(
                     modifier = Modifier
                         .padding(7.dp)
                         .fillMaxWidth()
-                        .clickable{
+                        .clickable {
                             navController.navigate("${Routes.ADD_REPORT.route}?id=${note.note.id}")
                         }
                 ) {
@@ -211,12 +255,16 @@ fun ContentHome(
                     Row(modifier = Modifier.padding(7.dp)) {
                         Text(
                             text = "${persianDateTime.convertDateToPersianDateWeekDay(note.note.createdAt)}",
-                            modifier = Modifier.padding(7.dp).weight(1f)
+                            modifier = Modifier
+                                .padding(7.dp)
+                                .weight(1f)
                         ) 
                         Text(
                             text = note.category?.name?:"پیش فرض",
                             textAlign=TextAlign.End,
-                            modifier = Modifier.padding(7.dp).weight(1f)
+                            modifier = Modifier
+                                .padding(7.dp)
+                                .weight(1f)
                         )
                     }
                 }

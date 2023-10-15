@@ -20,6 +20,8 @@ class HomeViewModel(val noteRepository: NoteRepository,val categoryRepository: C
     val reportList =_reportList.asStateFlow()
 
     val isShowCategoryBottomSheet = mutableStateOf(false)
+    val isShowDeleteCategory = mutableStateOf(false)
+    val selectedCategoryForDelete = mutableStateOf<Category?>(null)
     val categoryInputText = mutableStateOf("")
 
     private val _categoryList = MutableStateFlow<List<Category>>(emptyList())
@@ -56,9 +58,11 @@ class HomeViewModel(val noteRepository: NoteRepository,val categoryRepository: C
         }
     }
 
-    fun deleteCategory(category: Category){
+    fun deleteCategory(){
         viewModelScope.launch(Dispatchers.IO){
-            categoryRepository.deleteCategory(category)
+            selectedCategoryForDelete.value?.let {category->
+                categoryRepository.deleteCategory(category)
+            }
         }
     }
 }
