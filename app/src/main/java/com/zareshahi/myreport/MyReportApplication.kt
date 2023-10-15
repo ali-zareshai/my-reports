@@ -12,7 +12,6 @@ import com.zareshahi.myreport.screen.AddNewReportViewModel
 import com.zareshahi.myreport.screen.HomeViewModel
 import com.zareshahi.myreport.util.PersianDateTime
 import org.koin.androidx.viewmodel.dsl.viewModel
-import saman.zamani.persiandate.PersianDate
 
 class MyReportApplication : Application() {
     override fun onCreate() {

@@ -63,7 +63,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.gmail.hamedvakhide.compose_jalali_datepicker.JalaliDatePickerDialog
 import com.marosseleng.compose.material3.datetimepickers.time.ui.dialog.TimePickerDialog
+import com.zareshahi.myreport.component.CategoryDropMenu
 import com.zareshahi.myreport.component.TextInput
+import com.zareshahi.myreport.database.entrity.Category
 import com.zareshahi.myreport.navigation.Routes
 import ir.esfandune.wave.compose.component.core.AnimatedContent
 import ir.esfandune.wave.compose.component.core.MyCard
@@ -72,7 +74,11 @@ import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddNewReport(id:Long?,navController: NavController, screenVM: AddNewReportViewModel = koinViewModel()) {
+fun AddNewReport(
+    id: Long?,
+    navController: NavController,
+    screenVM: AddNewReportViewModel = koinViewModel()
+) {
     val context = LocalContext.current
     LaunchedEffect(key1 = Unit) {
         screenVM.getListCategory()
@@ -87,11 +93,11 @@ fun AddNewReport(id:Long?,navController: NavController, screenVM: AddNewReportVi
                 onBackClick = { navController.popBackStack() },
                 isShowBackButton = true,
                 actions = {
-                    if (screenVM.isEditMode.value){
-                        IconButton(onClick = { screenVM.isShowDeleteNoteDialog.value=true }) {
+                    if (screenVM.isEditMode.value) {
+                        IconButton(onClick = { screenVM.isShowDeleteNoteDialog.value = true }) {
                             Icon(
                                 imageVector = Icons.Rounded.Delete,
-                                contentDescription ="حذف گزارش",
+                                contentDescription = "حذف گزارش",
                                 tint = MaterialTheme.colorScheme.error
                             )
                         }
@@ -131,22 +137,26 @@ fun AddNewReport(id:Long?,navController: NavController, screenVM: AddNewReportVi
     }
 
     AnimatedContent(trueState = screenVM.isShowDeleteNoteDialog.value) {
-        if (it){
+        if (it) {
             AlertDialog(
-                onDismissRequest = { screenVM.isShowDeleteNoteDialog.value =false },
+                onDismissRequest = { screenVM.isShowDeleteNoteDialog.value = false },
                 confirmButton = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         TextButton(onClick = {
                             screenVM.delete()
-                            screenVM.isShowDeleteNoteDialog.value =false
-                            Toast.makeText(context,"حذف شد",Toast.LENGTH_LONG).show()
+                            screenVM.isShowDeleteNoteDialog.value = false
+                            Toast.makeText(context, "حذف شد", Toast.LENGTH_LONG).show()
                             navController.popBackStack()
                         }) {
-                           Icon(imageVector = Icons.Rounded.Done,"بله", tint = MaterialTheme.colorScheme.error)
+                            Icon(
+                                imageVector = Icons.Rounded.Done,
+                                "بله",
+                                tint = MaterialTheme.colorScheme.error
+                            )
                             Text(text = "بله")
                         }
-                        TextButton(onClick = { screenVM.isShowDeleteNoteDialog.value =false }) {
-                            Icon(imageVector = Icons.Rounded.Cancel,"خیر")
+                        TextButton(onClick = { screenVM.isShowDeleteNoteDialog.value = false }) {
+                            Icon(imageVector = Icons.Rounded.Cancel, "خیر")
                             Text(text = "خیر")
                         }
                     }
@@ -192,6 +202,7 @@ fun ContentAdd(
     screenVM: AddNewReportViewModel = koinViewModel()
 ) {
     val context = LocalContext.current
+    val lisCategory =screenVM.categoryList.collectAsState().value
     Column(
         modifier = Modifier
             .padding(paddingValues)
@@ -207,7 +218,7 @@ fun ContentAdd(
                     .padding(14.dp)
                     .fillMaxWidth()
             ) {
-                Button(
+                TextButton(
                     modifier = Modifier.weight(1f),
                     onClick = { screenVM.isShowDatePicker.value = true }) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -220,7 +231,7 @@ fun ContentAdd(
                     }
                 }
                 Spacer(modifier = Modifier.width(14.dp))
-                Button(
+                TextButton(
                     modifier = Modifier.weight(1f),
                     onClick = { screenVM.isShowTimePicker.value = true }) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -246,20 +257,14 @@ fun ContentAdd(
                     .fillMaxWidth()
                     .padding(7.dp)
             ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    val isOpenDropMenu = rememberSaveable {
-                        mutableStateOf(false)
+                CategoryDropMenu(
+                    listCategory=lisCategory,
+                    modifier = Modifier.weight(1f),
+                    onSelect = {
+                        screenVM.selectedCategory.value = it
                     }
-                    Text(text = "دسته بندی:")
-                    TextButton(
-                        modifier = Modifier.padding(7.dp),
-                        onClick = { isOpenDropMenu.value = true }
-                    ) {
-                        Text(text = screenVM.selectedCategory.value?.name ?: "پیش فرض")
-                    }
+                )
 
-                    CategoryDropMenu(isOpenDropMenu = isOpenDropMenu)
-                }
                 Column(modifier = Modifier.weight(1f)) {
                     Text(text = "مدت زمان:")
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -301,114 +306,84 @@ fun ContentAdd(
                     }
                 }
             }
-
-            Divider(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(7.dp),
-                thickness = 1.5.dp,
-                color = MaterialTheme.colorScheme.primary
-            )
-
-            TextInput(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(7.dp),
-                value = screenVM.newTxt.value,
-                onValueChange = {
-                    screenVM.newTxt.value = it
-                }
-            )
-            Spacer(modifier = Modifier.height(7.dp))
-            Button(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(14.dp),
-                onClick = {
-                    if (screenVM.isEditMode.value){
-                        screenVM.edit()
-                        Toast.makeText(context,"ویرایش شد",Toast.LENGTH_LONG).show()
-                        navController.popBackStack()
-                    }else
-                        screenVM.addNewWork()
-                }
-            ) {
-                if (screenVM.isEditMode.value){
-                    Icon(imageVector = Icons.Rounded.Edit, contentDescription = "آپدیت")
-                    Text(text = "آپدیت")
-                }else{
-                    Icon(imageVector = Icons.Rounded.Add, contentDescription = "اضافه")
-                    Text(text = "اضافه کردن")
-                }
-            }
-
-
         }
 
-        MyCard(
+        Divider(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(7.dp)
+                .padding(7.dp),
+            thickness = 1.5.dp,
+            color = MaterialTheme.colorScheme.primary
+        )
+
+        TextInput(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(7.dp),
+            value = screenVM.newTxt.value,
+            onValueChange = {
+                screenVM.newTxt.value = it
+            }
+        )
+        Spacer(modifier = Modifier.height(7.dp))
+        TextButton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(14.dp),
+            onClick = {
+                if (screenVM.isEditMode.value) {
+                    screenVM.edit()
+                    Toast.makeText(context, "ویرایش شد", Toast.LENGTH_LONG).show()
+                    navController.popBackStack()
+                } else
+                    screenVM.addNewWork()
+            }
         ) {
-            val listWork = screenVM.listWorks.collectAsState().value
-            LazyColumn {
-                itemsIndexed(items = listWork, key = { index, item -> "$index" }) { index, item ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(7.dp)
-                    ) {
-//                        Text(text = "${index+1}")
-                        Text(
-                            text = item.note ?: "--",
-                            fontSize = 21.sp,
-                            modifier = Modifier.weight(3f)
-                        )
-                        IconButton(onClick = { screenVM.deleteItemFromList(item) }) {
-                            Icon(
-                                imageVector = Icons.Rounded.Delete,
-                                contentDescription = "حذف",
-                                tint = MaterialTheme.colorScheme.error
-                            )
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
+            if (screenVM.isEditMode.value) {
+                Icon(imageVector = Icons.Rounded.Edit, contentDescription = "آپدیت")
+                Text(text = "آپدیت")
+            } else {
+                Icon(imageVector = Icons.Rounded.Add, contentDescription = "اضافه")
+                Text(text = "اضافه کردن")
             }
         }
 
+
     }
-}
 
-@Composable
-private fun CategoryDropMenu(
-    isOpenDropMenu: MutableState<Boolean>,
-    screenVM: AddNewReportViewModel = koinViewModel()
-) {
-    val categoryList = screenVM.categoryList.collectAsState().value
-
-    DropdownMenu(
-        expanded = isOpenDropMenu.value,
-        onDismissRequest = { isOpenDropMenu.value = false }
+    MyCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(7.dp)
     ) {
-        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-            categoryList.forEach { category ->
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = category.name ?: "نامشخص",
-                            textAlign = TextAlign.Start,
-                            modifier = Modifier.fillMaxWidth()
+        val listWork = screenVM.listWorks.collectAsState().value
+        LazyColumn {
+            itemsIndexed(items = listWork, key = { index, item -> "$index" }) { index, item ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(7.dp)
+                ) {
+//                        Text(text = "${index+1}")
+                    Text(
+                        text = item.note ?: "--",
+                        fontSize = 21.sp,
+                        modifier = Modifier.weight(3f)
+                    )
+                    IconButton(onClick = { screenVM.deleteItemFromList(item) }) {
+                        Icon(
+                            imageVector = Icons.Rounded.Delete,
+                            contentDescription = "حذف",
+                            tint = MaterialTheme.colorScheme.error
                         )
-                    },
-                    onClick = {
-                        screenVM.selectedCategory.value = category
-                        isOpenDropMenu.value = false
-                    },
-                    modifier = Modifier.padding(3.dp)
-                )
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
     }
 
 }
+
+
+

@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 class HomeViewModel(val noteRepository: NoteRepository,val categoryRepository: CategoryRepository):ViewModel() {
     private val _reportList = MutableStateFlow<List<NoteWithCategory>>(emptyList())
@@ -21,11 +22,17 @@ class HomeViewModel(val noteRepository: NoteRepository,val categoryRepository: C
 
     val isShowCategoryBottomSheet = mutableStateOf(false)
     val isShowDeleteCategory = mutableStateOf(false)
+    val isShowSearchBottomSheet = mutableStateOf(false)
     val selectedCategoryForDelete = mutableStateOf<Category?>(null)
     val categoryInputText = mutableStateOf("")
 
     private val _categoryList = MutableStateFlow<List<Category>>(emptyList())
     val categoryList =_categoryList.asStateFlow()
+
+    val searchFromDate = mutableStateOf<LocalDate?>(null)
+    val searchToDate = mutableStateOf<LocalDate?>(null)
+    val searchCategory = mutableStateOf<Category?>(null)
+    val searchText = mutableStateOf("")
 
     fun search(){
         viewModelScope.launch(Dispatchers.IO){

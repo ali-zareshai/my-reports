@@ -2,11 +2,14 @@ package com.zareshahi.myreport.screen
 
 import android.widget.Toast
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,7 +20,9 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.rounded.Cancel
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Done
+import androidx.compose.material.icons.rounded.FilterAlt
 import androidx.compose.material.icons.rounded.Save
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
@@ -41,6 +46,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.zareshahi.myreport.component.CategoryDropMenu
+import com.zareshahi.myreport.component.FromToDatePicker
 import com.zareshahi.myreport.component.TextInput
 import com.zareshahi.myreport.navigation.Routes
 import com.zareshahi.myreport.util.PersianDateTime
@@ -56,12 +63,21 @@ import org.koin.compose.koinInject
 fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel = koinViewModel()) {
     LaunchedEffect(key1 = Unit) {
         homeViewModel.search()
+        homeViewModel.getListCategory()
     }
     Scaffold(
         topBar = {
             SimpleTopBar(
                 title = "گزارش کار",
-                isShowBackButton = false
+                isShowBackButton = false,
+                actions = {
+                    IconButton(onClick = { homeViewModel.isShowSearchBottomSheet.value = true }) {
+                        Icon(
+                            imageVector = Icons.Rounded.FilterAlt,
+                            contentDescription = "فیلتر گزارش ها"
+                        )
+                    }
+                }
             )
         },
         content = { ContentHome(paddingValues = it, navController) },
@@ -79,25 +95,77 @@ fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel = koin
         if (it)
             DeleteCategoryDialog()
     }
+
+    AnimatedContent(trueState = homeViewModel.isShowSearchBottomSheet.value) {
+        if (it)
+            SearchBottomSheet()
+    }
+}
+
+@Composable
+fun SearchBottomSheet(homeViewModel: HomeViewModel = koinViewModel()) {
+    val lisCategory = homeViewModel.categoryList.collectAsState().value
+
+    BottomCard(
+        fabButtons = { SearchFabButtons() },
+        onClose = { homeViewModel.isShowSearchBottomSheet.value = false }
+    ) {
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .padding(7.dp), horizontalArrangement = Arrangement.Center) {
+            Text(text = "جستجو")
+        }
+        TextInput(
+            value = homeViewModel.searchText.value,
+            onValueChange = { txt ->
+                homeViewModel.searchText.value = txt
+            },
+            placeholderText = "جستجو"
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        CategoryDropMenu(
+            listCategory=lisCategory,
+            modifier = Modifier.fillMaxWidth(),
+            onSelect = {
+                homeViewModel.searchCategory.value =it
+            }
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        FromToDatePicker(
+            fromDate = {
+                homeViewModel.searchFromDate.value = it
+            },
+            toDate = {
+                homeViewModel.searchToDate.value = it
+            }
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+
+
+    }
 }
 
 @Composable
 fun DeleteCategoryDialog(homeViewModel: HomeViewModel = koinViewModel()) {
     val context = LocalContext.current
     AlertDialog(
-        onDismissRequest = { homeViewModel.isShowDeleteCategory.value =false },
+        onDismissRequest = { homeViewModel.isShowDeleteCategory.value = false },
         confirmButton = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 TextButton(onClick = {
                     homeViewModel.deleteCategory()
-                    homeViewModel.isShowDeleteCategory.value =false
-                    Toast.makeText(context,"حذف شد",Toast.LENGTH_LONG).show()
+                    homeViewModel.isShowDeleteCategory.value = false
+                    Toast.makeText(context, "حذف شد", Toast.LENGTH_LONG).show()
                 }) {
-                    Icon(imageVector = Icons.Rounded.Done,"بله", tint = MaterialTheme.colorScheme.error)
+                    Icon(
+                        imageVector = Icons.Rounded.Done,
+                        "بله",
+                        tint = MaterialTheme.colorScheme.error
+                    )
                     Text(text = "بله")
                 }
-                TextButton(onClick = { homeViewModel.isShowDeleteCategory.value =false }) {
-                    Icon(imageVector = Icons.Rounded.Cancel,"خیر")
+                TextButton(onClick = { homeViewModel.isShowDeleteCategory.value = false }) {
+                    Icon(imageVector = Icons.Rounded.Cancel, "خیر")
                     Text(text = "خیر")
                 }
             }
@@ -117,15 +185,17 @@ private fun CategoryBottomSheet(homeViewModel: HomeViewModel = koinViewModel()) 
         fabButtons = {},
         onClose = { homeViewModel.isShowCategoryBottomSheet.value = false }
     ) {
-        LaunchedEffect(key1 = Unit) {
-            homeViewModel.getListCategory()
-        }
         val catList = homeViewModel.categoryList.collectAsState().value
         val context = LocalContext.current
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = "مدیریت دسته ها")
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .padding(7.dp), horizontalArrangement = Arrangement.Center) {
+                Text(text = "مدیریت دسته ها")
+            }
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -189,8 +259,8 @@ private fun CategoryBottomSheet(homeViewModel: HomeViewModel = koinViewModel()) 
                                     .padding(7.dp)
                             )
                             IconButton(onClick = {
-                                homeViewModel.selectedCategoryForDelete.value =it
-                                homeViewModel.isShowDeleteCategory.value =true
+                                homeViewModel.selectedCategoryForDelete.value = it
+                                homeViewModel.isShowDeleteCategory.value = true
                             }) {
                                 Icon(
                                     imageVector = Icons.Rounded.Delete,
@@ -232,7 +302,7 @@ fun ContentHome(
     paddingValues: PaddingValues,
     navController: NavController,
     homeViewModel: HomeViewModel = koinViewModel(),
-    persianDateTime:PersianDateTime= koinInject()
+    persianDateTime: PersianDateTime = koinInject()
 ) {
     val reportList = homeViewModel.reportList.collectAsState().value
     Box(modifier = Modifier.padding(paddingValues)) {
@@ -258,10 +328,10 @@ fun ContentHome(
                             modifier = Modifier
                                 .padding(7.dp)
                                 .weight(1f)
-                        ) 
+                        )
                         Text(
-                            text = note.category?.name?:"پیش فرض",
-                            textAlign=TextAlign.End,
+                            text = note.category?.name ?: "پیش فرض",
+                            textAlign = TextAlign.End,
                             modifier = Modifier
                                 .padding(7.dp)
                                 .weight(1f)
@@ -274,15 +344,15 @@ fun ContentHome(
 }
 
 
-//@Composable
-//private fun FabButtons(homeViewModel: HomeViewModel= koinViewModel()) {
-//    FloatingActionButton(
-//        onClick = {
-//
-//        },
-//    ) {
-//        Icon(
-//            imageVector = Icons.Rounded.Save, contentDescription = "ذخیره"
-//        )
-//    }
-//}
+@Composable
+private fun SearchFabButtons(homeViewModel: HomeViewModel = koinViewModel()) {
+    FloatingActionButton(
+        onClick = {
+
+        },
+    ) {
+        Icon(
+            imageVector = Icons.Rounded.Search, contentDescription = "جستجو"
+        )
+    }
+}
