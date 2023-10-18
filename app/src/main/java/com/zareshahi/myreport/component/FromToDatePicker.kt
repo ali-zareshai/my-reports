@@ -24,18 +24,23 @@ import org.koin.compose.koinInject
 import java.time.LocalDate
 
 @Composable
-fun FromToDatePicker(fromDate:(LocalDate)->Unit,toDate:(LocalDate)->Unit){
+fun FromToDatePicker(
+    defaultFromDate:String?,
+    defaultToDate:String?,
+    fromDate:(LocalDate)->Unit,
+    toDate:(LocalDate)->Unit
+){
     val isShowDialog = remember {
         mutableStateOf(false)
     }
     val fromDate = remember {
-        mutableStateOf("")
+        mutableStateOf(defaultFromDate)
     }
     val selected = remember {
         mutableStateOf("from")
     }
     val toDate = remember {
-        mutableStateOf("")
+        mutableStateOf(defaultToDate)
     }
     JalaliDatePickerDialog(
         openDialog = isShowDialog,
@@ -69,7 +74,7 @@ fun FromToDatePicker(fromDate:(LocalDate)->Unit,toDate:(LocalDate)->Unit){
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(text = "از تاریخ:")
-                Text(text = fromDate.value, fontWeight = FontWeight.Bold)
+                Text(text = fromDate.value?:"", fontWeight = FontWeight.Bold)
             }
         }
         Spacer(modifier = Modifier.width(7.dp))
@@ -84,7 +89,7 @@ fun FromToDatePicker(fromDate:(LocalDate)->Unit,toDate:(LocalDate)->Unit){
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(text = "تا تاریخ:")
-                Text(text = toDate.value, fontWeight = FontWeight.Bold)
+                Text(text = toDate.value?:"", fontWeight = FontWeight.Bold)
             }
         }
     }

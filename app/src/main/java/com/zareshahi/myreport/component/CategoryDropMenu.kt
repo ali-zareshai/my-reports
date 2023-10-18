@@ -27,7 +27,8 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun CategoryDropMenu(
     listCategory:List<Category>,
-    onSelect:(Category)->Unit,
+    defaultSelectedCategory:Category?,
+    onSelect:(Category?)->Unit,
     modifier: Modifier=Modifier,
 ) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
@@ -49,6 +50,21 @@ fun CategoryDropMenu(
             onDismissRequest = { isOpenDropMenu.value = false }
         ) {
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = "پیش فرض",
+                            textAlign = TextAlign.Start,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    },
+                    onClick = {
+                        onSelect(null)
+                        selectedCategory.value =null
+                        isOpenDropMenu.value = false
+                    },
+                    modifier = Modifier.padding(3.dp)
+                )
                 listCategory.forEach { category ->
                     DropdownMenuItem(
                         text = {

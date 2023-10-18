@@ -57,6 +57,7 @@ import ir.esfandune.wave.compose.component.core.MyCard
 import ir.esfandune.wave.compose.component.core.SimpleTopBar
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
+import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -103,16 +104,18 @@ fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel = koin
 }
 
 @Composable
-fun SearchBottomSheet(homeViewModel: HomeViewModel = koinViewModel()) {
+fun SearchBottomSheet(homeViewModel: HomeViewModel = koinViewModel(),persianDateTime: PersianDateTime= koinInject()) {
     val lisCategory = homeViewModel.categoryList.collectAsState().value
 
     BottomCard(
         fabButtons = { SearchFabButtons() },
         onClose = { homeViewModel.isShowSearchBottomSheet.value = false }
     ) {
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .padding(7.dp), horizontalArrangement = Arrangement.Center) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(7.dp), horizontalArrangement = Arrangement.Center
+        ) {
             Text(text = "جستجو")
         }
         TextInput(
@@ -124,14 +127,21 @@ fun SearchBottomSheet(homeViewModel: HomeViewModel = koinViewModel()) {
         )
         Spacer(modifier = Modifier.height(4.dp))
         CategoryDropMenu(
-            listCategory=lisCategory,
+            listCategory = lisCategory,
+            defaultSelectedCategory=homeViewModel.searchCategory.value,
             modifier = Modifier.fillMaxWidth(),
             onSelect = {
-                homeViewModel.searchCategory.value =it
+                homeViewModel.searchCategory.value = it
             }
         )
         Spacer(modifier = Modifier.height(4.dp))
         FromToDatePicker(
+            defaultFromDate = persianDateTime.convertDateToPersianDate(
+                homeViewModel.searchFromDate.value?: LocalDate.now()
+            ),
+            defaultToDate = persianDateTime.convertDateToPersianDate(
+                homeViewModel.searchToDate.value?: LocalDate.now()
+            ),
             fromDate = {
                 homeViewModel.searchFromDate.value = it
             },
@@ -190,9 +200,11 @@ private fun CategoryBottomSheet(homeViewModel: HomeViewModel = koinViewModel()) 
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .padding(7.dp), horizontalArrangement = Arrangement.Center) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(7.dp), horizontalArrangement = Arrangement.Center
+            ) {
                 Text(text = "مدیریت دسته ها")
             }
 
@@ -348,7 +360,8 @@ fun ContentHome(
 private fun SearchFabButtons(homeViewModel: HomeViewModel = koinViewModel()) {
     FloatingActionButton(
         onClick = {
-
+            homeViewModel.search()
+            homeViewModel.isShowSearchBottomSheet.value = false
         },
     ) {
         Icon(

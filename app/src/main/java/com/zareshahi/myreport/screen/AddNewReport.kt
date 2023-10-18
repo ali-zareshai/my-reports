@@ -259,6 +259,7 @@ fun ContentAdd(
             ) {
                 CategoryDropMenu(
                     listCategory=lisCategory,
+                    defaultSelectedCategory=screenVM.selectedCategory.value,
                     modifier = Modifier.weight(1f),
                     onSelect = {
                         screenVM.selectedCategory.value = it

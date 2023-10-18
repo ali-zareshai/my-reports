@@ -29,15 +29,19 @@ class HomeViewModel(val noteRepository: NoteRepository,val categoryRepository: C
     private val _categoryList = MutableStateFlow<List<Category>>(emptyList())
     val categoryList =_categoryList.asStateFlow()
 
-    val searchFromDate = mutableStateOf<LocalDate?>(null)
-    val searchToDate = mutableStateOf<LocalDate?>(null)
+    val searchFromDate = mutableStateOf<LocalDate>(LocalDate.now().minusDays(30))
+    val searchToDate = mutableStateOf<LocalDate>(LocalDate.now())
     val searchCategory = mutableStateOf<Category?>(null)
     val searchText = mutableStateOf("")
 
     fun search(){
         viewModelScope.launch(Dispatchers.IO){
-            noteRepository.fetchNotes(catID = null)
-                .distinctUntilChanged()
+            noteRepository.fetchNotes(
+                catID = searchCategory.value?.id,
+                fromDate = searchFromDate.value,
+                toDate = searchToDate.value,
+                searchText=searchText.value
+            ).distinctUntilChanged()
                 .collect{
                     it?.let {reports->
                         _reportList.value =reports
