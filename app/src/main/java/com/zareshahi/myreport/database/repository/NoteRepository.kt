@@ -27,9 +27,9 @@ class NoteRepository(val noteDao: NoteDao) {
     fun fetchNotes(catID:Long?, fromDate: LocalDate?, toDate: LocalDate?, searchText:String?): Flow<List<NoteWithCategory>?> {
         val query ="""
             SELECT * FROM tb_note 
-            WHERE 1 ${if(catID==null) " AND category_id=''" else " AND category_id=$catID"} 
+            WHERE 1 ${if(catID==null) " AND category_id is null" else " AND category_id=$catID"} 
             ${if (fromDate==null) "" else " AND created_at>='$fromDate'"}
-            ${if (toDate==null) "" else " AND created_at<'$toDate'"}
+            ${if (toDate==null) "" else " AND created_at<='${toDate.plusDays(1)}'"}
             ${if (searchText.isNullOrBlank()) "" else " AND note like '%$searchText%'"}
             ORDER BY created_at
         """.trimIndent().replace("\\s+".toRegex()," ").trim()

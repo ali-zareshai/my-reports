@@ -1,5 +1,6 @@
 package com.zareshahi.myreport.screen
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +22,7 @@ import androidx.compose.material.icons.rounded.Cancel
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material.icons.rounded.FilterAlt
+import androidx.compose.material.icons.rounded.Print
 import androidx.compose.material.icons.rounded.Save
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Settings
@@ -50,13 +52,19 @@ import com.zareshahi.myreport.component.CategoryDropMenu
 import com.zareshahi.myreport.component.FromToDatePicker
 import com.zareshahi.myreport.component.TextInput
 import com.zareshahi.myreport.navigation.Routes
+import com.zareshahi.myreport.util.FilePickerDialog
 import com.zareshahi.myreport.util.PersianDateTime
+import com.zareshahi.myreport.util.PrinterDialog
 import ir.esfandune.wave.compose.component.core.AnimatedContent
 import ir.esfandune.wave.compose.component.core.BottomCard
 import ir.esfandune.wave.compose.component.core.MyCard
 import ir.esfandune.wave.compose.component.core.SimpleTopBar
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
+import java.io.File
+import java.net.URI
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -101,10 +109,26 @@ fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel = koin
         if (it)
             SearchBottomSheet()
     }
+
+    AnimatedContent(trueState = homeViewModel.isShowPrintDialog.value) {
+        if (it)
+            printDialog()
+    }
 }
 
 @Composable
-fun SearchBottomSheet(homeViewModel: HomeViewModel = koinViewModel(),persianDateTime: PersianDateTime= koinInject()) {
+fun printDialog(homeViewModel: HomeViewModel = koinViewModel()) {
+    val context = LocalContext.current
+    PrinterDialog(onCloseClick = { homeViewModel.isShowPrintDialog.value =false}) {
+        homeViewModel.print(context)
+    }
+}
+
+@Composable
+fun SearchBottomSheet(
+    homeViewModel: HomeViewModel = koinViewModel(),
+    persianDateTime: PersianDateTime = koinInject()
+) {
     val lisCategory = homeViewModel.categoryList.collectAsState().value
 
     BottomCard(
@@ -128,7 +152,7 @@ fun SearchBottomSheet(homeViewModel: HomeViewModel = koinViewModel(),persianDate
         Spacer(modifier = Modifier.height(4.dp))
         CategoryDropMenu(
             listCategory = lisCategory,
-            defaultSelectedCategory=homeViewModel.searchCategory.value,
+            defaultSelectedCategory = homeViewModel.searchCategory.value,
             modifier = Modifier.fillMaxWidth(),
             onSelect = {
                 homeViewModel.searchCategory.value = it
@@ -137,10 +161,10 @@ fun SearchBottomSheet(homeViewModel: HomeViewModel = koinViewModel(),persianDate
         Spacer(modifier = Modifier.height(4.dp))
         FromToDatePicker(
             defaultFromDate = persianDateTime.convertDateToPersianDate(
-                homeViewModel.searchFromDate.value?: LocalDate.now()
+                homeViewModel.searchFromDate.value ?: LocalDate.now()
             ),
             defaultToDate = persianDateTime.convertDateToPersianDate(
-                homeViewModel.searchToDate.value?: LocalDate.now()
+                homeViewModel.searchToDate.value ?: LocalDate.now()
             ),
             fromDate = {
                 homeViewModel.searchFromDate.value = it
@@ -291,10 +315,16 @@ private fun CategoryBottomSheet(homeViewModel: HomeViewModel = koinViewModel()) 
 
 @Composable
 fun BottomBarHome(navController: NavController, screenVM: HomeViewModel = koinViewModel()) {
+    val context = LocalContext.current
     BottomAppBar(
         actions = {
             IconButton(onClick = { screenVM.isShowCategoryBottomSheet.value = true }) {
                 Icon(imageVector = Icons.Rounded.Settings, contentDescription = "مدیریت دسته ها")
+            }
+            IconButton(onClick = {
+                screenVM.isShowPrintDialog.value = true
+            }) {
+                Icon(imageVector = Icons.Rounded.Print, contentDescription = "چاپ گزارش")
             }
         },
         floatingActionButton = {

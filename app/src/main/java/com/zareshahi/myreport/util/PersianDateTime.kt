@@ -29,17 +29,17 @@ class PersianDateTime {
         return pdformater.format(pDate)
     }
 
-    fun convertDateToPersianDate(localDateTime: LocalDateTime): String {
+    fun convertDateToPersianDate(localDateTime: LocalDateTime,format:String="j/F/Y"): String {
         val date =Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant())
         val pDate =PersianDate(date)
-        val pdformater = PersianDateFormat("j/F/Y")
+        val pdformater = PersianDateFormat(format)
         return pdformater.format(pDate)
     }
 
-    fun convertDateToPersianDate(localDate: LocalDate): String {
+    fun convertDateToPersianDate(localDate: LocalDate,format:String="j/F/Y"): String {
         val date =Date.from(localDate.atTime(LocalTime.now()).atZone(ZoneId.systemDefault()).toInstant())
         val pDate =PersianDate(date)
-        val pdformater = PersianDateFormat("j/F/Y")
+        val pdformater = PersianDateFormat(format)
         return pdformater.format(pDate)
     }
 

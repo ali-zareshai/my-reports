@@ -19,7 +19,7 @@ class MyReportApplication : Application() {
 
         val viewModeModule = module {
             viewModel{
-                HomeViewModel(get(),get())
+                HomeViewModel(get(),get(),get())
             }
             viewModel{
                 AddNewReportViewModel(get(),get())

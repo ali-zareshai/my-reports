@@ -350,39 +350,42 @@ fun ContentAdd(
         }
 
 
-    }
-
-    MyCard(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(7.dp)
-    ) {
-        val listWork = screenVM.listWorks.collectAsState().value
-        LazyColumn {
-            itemsIndexed(items = listWork, key = { index, item -> "$index" }) { index, item ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(7.dp)
-                ) {
+        MyCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(7.dp)
+        ) {
+            val listWork = screenVM.listWorks.collectAsState().value
+            LazyColumn {
+                itemsIndexed(items = listWork, key = { index, item -> "$index" }) { index, item ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(7.dp)
+                    ) {
 //                        Text(text = "${index+1}")
-                    Text(
-                        text = item.note ?: "--",
-                        fontSize = 21.sp,
-                        modifier = Modifier.weight(3f)
-                    )
-                    IconButton(onClick = { screenVM.deleteItemFromList(item) }) {
-                        Icon(
-                            imageVector = Icons.Rounded.Delete,
-                            contentDescription = "حذف",
-                            tint = MaterialTheme.colorScheme.error
+                        Text(
+                            text = item.note ?: "--",
+                            fontSize = 21.sp,
+                            modifier = Modifier.weight(3f)
                         )
+                        IconButton(onClick = { screenVM.deleteItemFromList(item) }) {
+                            Icon(
+                                imageVector = Icons.Rounded.Delete,
+                                contentDescription = "حذف",
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        }
                     }
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
-                Spacer(modifier = Modifier.height(8.dp))
             }
         }
+
+
     }
+
+
 
 }
 
