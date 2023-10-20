@@ -104,30 +104,7 @@ class HomeViewModel(
 
     fun print(context: Context) {
         val temp = readFromAsset(context = context, filename = "report_temp.html")
-        val tableData = StringBuilder()
-        _reportList.value.forEachIndexed { index, report ->
-            tableData.append(
-                """
-                <tr ${if ((index % 2) == 0) "style=\"background-color:rgb(193, 193, 193);\"" else ""}>
-                    <td>${index + 1}</td>
-                    ${if (reportIsShowNoteCol.value) "<td class=\"col-note\">${report.note.note}</td>" else ""}
-                    ${if (reportIsShowDurationCol.value) "<td class=\"col-duration\">${
-                    if (report.note.duration.equals(
-                            ":"
-                        )
-                    ) "" else report.note.duration
-                }</td>" else ""} 
-                    ${if (reportIsShowDateCol.value) "<td class=\"col-date\">${
-                    persianDateTime.convertDateToPersianDate(
-                        report.note.createdAt,
-                        "j/F/Y l ${if (reportIsShowTime.value) "H:m" else ""}"
-                    )
-                }</td>" else ""}
-                    
-                </tr>
-            """.trimIndent()
-            )
-        }
+
         val tableHeader ="""
             <th class="col-id">ردیف</th>
             ${if (reportIsShowNoteCol.value) "<th class=\"col-note\">موضوع</th>" else ""}
@@ -148,12 +125,11 @@ class HomeViewModel(
                 "**category**",
                 if (searchCategory.value == null) "پیش فرض" else "${searchCategory.value?.name}"
             ).replace("**keyword**",if (reportIsShowSearchedKeyWord.value) searchText.value else "")
-            .replace("**table_data**", tableData.toString())
+            .replace("**table_data**", generateHtmlRowData())
             .replace(" **table_header**",tableHeader)
             .replace("**is_show_header**",if (reportHeader.value.isBlank()) "none" else "block")
             .replace("**font-size**","${reportFontSize.value}px;")
 
-        Log.e("report>>",htmlData)
         showWebview(context,htmlData)
 
 
@@ -186,5 +162,63 @@ class HomeViewModel(
 
         }
         webView.loadDataWithBaseURL(null, htmlData, "text/HTML", "UTF-8", null)
+    }
+
+    private fun generateHtmlRowData(): String {
+        val tableData = StringBuilder()
+        var index=1
+        if (reportIsShowGroupDate.value){
+            _reportList.value.groupBy {
+                it.note.createdAt.toLocalDate()
+            }.forEach {
+                val notes =it.value
+                    .map { it.note.note }
+                    .map { "<li>$it</li>" }
+                    .joinToString("")
+                tableData.append(
+                    """
+                <tr ${if ((index % 2) == 0) "style=\"background-color:rgb(193, 193, 193);\"" else ""}>
+                    <td>${index++}</td>
+                    ${if (reportIsShowNoteCol.value) "<td class=\"col-note\"><ol>$notes</ol></td>" else ""}
+                    ${if (reportIsShowDurationCol.value) "<td class=\"col-duration\"></td>" else ""} 
+                    ${if (reportIsShowDateCol.value) "<td class=\"col-date\">${
+                        persianDateTime.convertDateToPersianDate(
+                            it.key,
+                            "j/F/Y l"
+                        )
+                    }</td>" else ""}
+                    
+                </tr>
+            """.trimIndent()
+                )
+            }
+
+
+        }else{
+            _reportList.value.forEachIndexed { index, report ->
+                tableData.append(
+                    """
+                <tr ${if ((index % 2) == 0) "style=\"background-color:rgb(193, 193, 193);\"" else ""}>
+                    <td>${index + 1}</td>
+                    ${if (reportIsShowNoteCol.value) "<td class=\"col-note\">${report.note.note}</td>" else ""}
+                    ${if (reportIsShowDurationCol.value) "<td class=\"col-duration\">${
+                        if (report.note.duration.equals(
+                                ":"
+                            )
+                        ) "" else report.note.duration
+                    }</td>" else ""} 
+                    ${if (reportIsShowDateCol.value) "<td class=\"col-date\">${
+                        persianDateTime.convertDateToPersianDate(
+                            report.note.createdAt,
+                            "j/F/Y l ${if (reportIsShowTime.value) "H:m" else ""}"
+                        )
+                    }</td>" else ""}
+                    
+                </tr>
+            """.trimIndent()
+                )
+            }
+        }
+        return tableData.toString()
     }
 }
