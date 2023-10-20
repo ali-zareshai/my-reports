@@ -15,7 +15,9 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.rounded.AccessTime
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.Cancel
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Done
@@ -49,6 +51,7 @@ import com.zareshahi.myreport.component.CategoryDropMenu
 import com.zareshahi.myreport.component.TextInput
 import com.zareshahi.myreport.navigation.Routes
 import com.zareshahi.myreport.component.AnimatedContent
+import com.zareshahi.myreport.component.MyButton
 import com.zareshahi.myreport.component.MyCard
 import com.zareshahi.myreport.component.SimpleTopBar
 import org.koin.androidx.compose.koinViewModel
@@ -70,7 +73,7 @@ fun AddNewReport(
     Scaffold(
         topBar = {
             SimpleTopBar(
-                title = "گزارش کار جدید",
+                title = if (screenVM.isEditMode.value) "ویرایش گزارش کار" else "گزارش کار جدید",
                 onBackClick = { navController.popBackStack() },
                 isShowBackButton = true,
                 actions = {
@@ -123,23 +126,28 @@ fun AddNewReport(
                 onDismissRequest = { screenVM.isShowDeleteNoteDialog.value = false },
                 confirmButton = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        TextButton(onClick = {
-                            screenVM.delete()
-                            screenVM.isShowDeleteNoteDialog.value = false
-                            Toast.makeText(context, "حذف شد", Toast.LENGTH_LONG).show()
-                            navController.popBackStack()
-                        }) {
-                            Icon(
+                        MyButton(
+                            modifier = Modifier.weight(1f),
+                            leadingIcon = {Icon(
                                 imageVector = Icons.Rounded.Done,
                                 "بله",
                                 tint = MaterialTheme.colorScheme.error
-                            )
-                            Text(text = "بله")
-                        }
-                        TextButton(onClick = { screenVM.isShowDeleteNoteDialog.value = false }) {
-                            Icon(imageVector = Icons.Rounded.Cancel, "خیر")
-                            Text(text = "خیر")
-                        }
+                            )},
+                            name ="بله" ,
+                            onClick = {
+                                screenVM.delete()
+                                screenVM.isShowDeleteNoteDialog.value = false
+                                Toast.makeText(context, "حذف شد", Toast.LENGTH_LONG).show()
+                                navController.popBackStack()
+                            }
+                        )
+                        Spacer(modifier = Modifier.width(7.dp))
+                        MyButton(
+                            modifier = Modifier.weight(1f),
+                            leadingIcon = {Icon(imageVector = Icons.Rounded.Cancel, "خیر")},
+                            name ="خیر" ,
+                            onClick = { screenVM.isShowDeleteNoteDialog.value = false }
+                        )
                     }
                 },
                 title = {
@@ -199,31 +207,23 @@ fun ContentAdd(
                     .padding(14.dp)
                     .fillMaxWidth()
             ) {
-                TextButton(
+                MyButton(
                     modifier = Modifier.weight(1f),
-                    onClick = { screenVM.isShowDatePicker.value = true }) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(text = "تاریخ:", fontSize = 19.sp)
-                        Text(
-                            text = screenVM.selectedDate.value.ifEmpty { "انتخاب نشده" },
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold
-                        )
+                    name = "تاریخ:\n ${screenVM.selectedDate.value.ifEmpty { "انتخاب نشده" }}",
+                    onClick = { screenVM.isShowDatePicker.value = true },
+                    leadingIcon = {
+                        Icon(imageVector = Icons.Rounded.CalendarMonth, contentDescription = "تاریخ")
                     }
-                }
+                )
                 Spacer(modifier = Modifier.width(14.dp))
-                TextButton(
+                MyButton(
+                    name="زمان: \n ${screenVM.selectedTime.value.ifEmpty { "انتخاب نشده" }}",
                     modifier = Modifier.weight(1f),
-                    onClick = { screenVM.isShowTimePicker.value = true }) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(text = "زمان:", fontSize = 19.sp)
-                        Text(
-                            text = screenVM.selectedTime.value.ifEmpty { "انتخاب نشده" },
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp
-                        )
+                    onClick = { screenVM.isShowTimePicker.value = true },
+                    leadingIcon = {
+                        Icon(imageVector = Icons.Rounded.AccessTime, contentDescription = "زمان")
                     }
-                }
+                )
             }
             Divider(
                 modifier = Modifier
@@ -308,7 +308,7 @@ fun ContentAdd(
             }
         )
         Spacer(modifier = Modifier.height(7.dp))
-        TextButton(
+        MyButton(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(14.dp),
@@ -317,18 +317,23 @@ fun ContentAdd(
                     screenVM.edit()
                     Toast.makeText(context, "ویرایش شد", Toast.LENGTH_LONG).show()
                     navController.popBackStack()
-                } else
-                    screenVM.addNewWork()
-            }
-        ) {
-            if (screenVM.isEditMode.value) {
-                Icon(imageVector = Icons.Rounded.Edit, contentDescription = "آپدیت")
-                Text(text = "آپدیت")
-            } else {
-                Icon(imageVector = Icons.Rounded.Add, contentDescription = "اضافه")
-                Text(text = "اضافه کردن")
-            }
-        }
+                } else{
+                    if (screenVM.newTxt.value.isBlank())
+                        Toast.makeText(context,"نام نمی تواند خالی باشد",Toast.LENGTH_LONG).show()
+                    else
+                        screenVM.addNewWork()
+                }
+
+            },
+            name = if (screenVM.isEditMode.value) "ویرایش" else "اضافه کردن",
+            leadingIcon = {
+                if (screenVM.isEditMode.value)
+                    Icon(imageVector = Icons.Rounded.Edit, contentDescription = "آپدیت")
+                else
+                    Icon(imageVector = Icons.Rounded.Add, contentDescription = "اضافه")
+            },
+            color = MaterialTheme.colorScheme.errorContainer
+        )
 
 
         MyCard(

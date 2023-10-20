@@ -48,8 +48,6 @@ class AddNewReportViewModel(val noteRepository: NoteRepository,
     val categoryList =_categoryList.asStateFlow()
 
     fun addNewWork(){
-        if(newTxt.value.isEmpty())
-            return
         val listWork =_listWorks.value.toMutableList()
         val temp =TempNote(
             zonedDateTime = selectedZoneDateTime.value,

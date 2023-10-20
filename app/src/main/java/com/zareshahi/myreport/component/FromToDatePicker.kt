@@ -8,6 +8,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.CalendarMonth
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -63,34 +66,33 @@ fun FromToDatePicker(
             .padding(7.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        TextButton(
-            modifier = Modifier
-                .weight(1f)
-                .padding(7.dp),
+        MyButton(
+            name = "از تاریخ:\n ${fromDate.value}",
             onClick = {
                 isShowDialog.value =true
                 selected.value ="from"
-            }
-        ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(text = "از تاریخ:")
-                Text(text = fromDate.value?:"", fontWeight = FontWeight.Bold)
-            }
-        }
-        Spacer(modifier = Modifier.width(7.dp))
-        TextButton(
+            },
             modifier = Modifier
                 .weight(1f)
                 .padding(7.dp),
+            leadingIcon = {
+                Icon(imageVector = Icons.Rounded.CalendarMonth, contentDescription = "تاریخ")
+            }
+        )
+
+        Spacer(modifier = Modifier.width(7.dp))
+        MyButton(
+            name = "تا تاریخ:\n ${toDate.value}",
             onClick = {
                 isShowDialog.value =true
                 selected.value ="to"
+            },
+            modifier = Modifier
+                .weight(1f)
+                .padding(7.dp),
+            leadingIcon = {
+                Icon(imageVector = Icons.Rounded.CalendarMonth, contentDescription = "تاریخ")
             }
-        ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(text = "تا تاریخ:")
-                Text(text = toDate.value?:"", fontWeight = FontWeight.Bold)
-            }
-        }
+        )
     }
 }

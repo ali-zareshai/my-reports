@@ -3,8 +3,11 @@ package com.zareshahi.myreport.component
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Work
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -31,7 +34,7 @@ fun CategoryDropMenu(
     onSelect:(Category?)->Unit,
     modifier: Modifier=Modifier,
 ) {
-    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(modifier = modifier) {
         val isOpenDropMenu = remember {
             mutableStateOf(false)
         }
@@ -39,12 +42,16 @@ fun CategoryDropMenu(
             mutableStateOf<Category?>(null)
         }
         Text(text = "دسته بندی:")
-        TextButton(
-            modifier = Modifier.padding(7.dp),
-            onClick = { isOpenDropMenu.value = true }
-        ) {
-            Text(text = selectedCategory.value?.name ?: "پیش فرض")
-        }
+        MyButton(
+            modifier = Modifier
+                .padding(7.dp)
+                .fillMaxWidth(),
+            onClick = { isOpenDropMenu.value = true },
+            name = selectedCategory.value?.name ?: "پیش فرض",
+            leadingIcon = {
+                Icon(imageVector = Icons.Rounded.Work, contentDescription = "دسته")
+            }
+        )
         DropdownMenu(
             expanded = isOpenDropMenu.value,
             onDismissRequest = { isOpenDropMenu.value = false }

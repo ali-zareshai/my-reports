@@ -17,7 +17,8 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyButton(
-    modifier: Modifier = Modifier, name: String, onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    name: String, onClick: () -> Unit,
     leadingIcon: @Composable() (() -> Unit)? = null,
     trailingIcon: @Composable() (() -> Unit)? = null,
     color: Color = MaterialTheme.colorScheme.surfaceVariant,
