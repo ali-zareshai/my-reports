@@ -58,6 +58,7 @@ class HomeViewModel(
     val reportIsShowTime = mutableStateOf(false)
     val reportIsShowGroupDate = mutableStateOf(false)
     val reportIsShowSearchedKeyWord = mutableStateOf(false)
+    val reportIsShowSumTimes = mutableStateOf(false)
 
     fun search() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -111,6 +112,16 @@ class HomeViewModel(
             ${if (reportIsShowDurationCol.value) "<th class=\"col-duration\">مدت زمان</th>" else ""}   
             ${if (reportIsShowDateCol.value) "<th class=\"col-date\">تاریخ</th>" else ""}
         """.trimIndent()
+        val tableFooter ="""
+            <th class="col-id"></th>
+            ${if (reportIsShowNoteCol.value) "<th class=\"col-note\"></th>" else ""}
+            ${if (reportIsShowDurationCol.value) "<th class=\"col-duration\">${
+            sumDurations(_reportList.value.map {
+                it.note.duration?:""
+            })
+            }</th>" else ""}   
+            ${if (reportIsShowDateCol.value) "<th class=\"col-date\"></th>" else ""}
+        """.trimIndent()
         val htmlData = temp.replace("**header**", reportHeader.value)
             .replace(
                 "**date**",
@@ -129,6 +140,7 @@ class HomeViewModel(
             .replace(" **table_header**",tableHeader)
             .replace("**is_show_header**",if (reportHeader.value.isBlank()) "none" else "block")
             .replace("**font-size**","${reportFontSize.value}px;")
+            .replace(" **table_footer**",if(reportIsShowDurationCol.value) tableFooter else "")
 
         showWebview(context,htmlData)
 
@@ -180,7 +192,9 @@ class HomeViewModel(
                 <tr ${if ((index % 2) == 0) "style=\"background-color:rgb(193, 193, 193);\"" else ""}>
                     <td>${index++}</td>
                     ${if (reportIsShowNoteCol.value) "<td class=\"col-note\"><ol>$notes</ol></td>" else ""}
-                    ${if (reportIsShowDurationCol.value) "<td class=\"col-duration\"></td>" else ""} 
+                    ${if (reportIsShowDurationCol.value) "<td class=\"col-duration\">${sumDurations(it.value.map { 
+                        it.note.duration?:""
+                    })}</td>" else ""} 
                     ${if (reportIsShowDateCol.value) "<td class=\"col-date\">${
                         persianDateTime.convertDateToPersianDate(
                             it.key,
@@ -220,5 +234,22 @@ class HomeViewModel(
             }
         }
         return tableData.toString()
+    }
+
+    private fun sumDurations(sumList:List<String>): String {
+        var sumMinutes =0L
+        sumList.forEach {
+            if (it.isNotBlank() && it != ":"){
+                try {
+                    val hm= it.split(":")
+                    sumMinutes +=(hm[0].toInt()*60)+hm[1].toInt()
+                }catch (e:Exception){
+                    e.printStackTrace()
+                }
+            }
+        }
+        val h=sumMinutes/60
+        val m=sumMinutes - (h*60)
+        return "جمع: $h:$m "
     }
 }

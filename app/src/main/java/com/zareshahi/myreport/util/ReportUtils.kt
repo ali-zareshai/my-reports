@@ -122,6 +122,11 @@ fun PrinterDialog(
                     checked = homeViewModel.reportIsShowSearchedKeyWord.value,
                     onCheckedChange ={homeViewModel.reportIsShowSearchedKeyWord.value=it}
                 )
+                MyCheckbox(
+                    title = "نمایش جمع مدت زمان ها",
+                    checked = homeViewModel.reportIsShowSumTimes.value,
+                    onCheckedChange ={homeViewModel.reportIsShowSumTimes.value=it}
+                )
                 Divider(
                     modifier = Modifier
                         .fillMaxWidth()
