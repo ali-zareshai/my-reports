@@ -7,6 +7,7 @@
              }
              *{
                 font-family: 'myface',Tahoma, 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+                font-size:**font-size**
              }
             body{
                 margin-left: 1%;
@@ -31,15 +32,12 @@
             }
             .col-note{
                 width: 60%;
-<!--                display: **is_show_note**;-->
             }
             .col-duration{
                 width: 15%;
-<!--                display: **is_show_duration**;-->
             }
             .col-date{
                 width: 20%;
-<!--                display: **is_show_date**;-->
             }
             #report-info,#report-header{
                 width: 100%;
@@ -58,6 +56,9 @@
                 width: 100%;
                 direction: rtl;
             }
+            h3{
+                display:**is_show_header**;
+            }
         </style>
     </head>
     <body>
@@ -72,10 +73,7 @@
         <table>
             <thead>
                 <tr>
-                    <th class="col-id">ردیف</th>
-                    <th class="col-note">موضوع</th>
-                    <th class="col-duration">مدت زمان</th>
-                    <th class="col-date">تاریخ</th>
+                    **table_header**
                 </tr>
             </thead>
             <tbody>

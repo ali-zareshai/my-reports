@@ -11,14 +11,20 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AttachFile
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Print
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -28,6 +34,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.zareshahi.myreport.component.MyCheckbox
+import com.zareshahi.myreport.component.TextInput
+import com.zareshahi.myreport.screen.HomeViewModel
+import org.koin.androidx.compose.koinViewModel
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
@@ -47,7 +57,8 @@ fun readFromAsset(context:Context,filename:String): String {
 @Composable
 fun PrinterDialog(
     onCloseClick: () -> Unit,
-    onConfirmClick: () -> Unit
+    onConfirmClick: () -> Unit,
+    homeViewModel: HomeViewModel = koinViewModel()
 ) {
     AlertDialog(
         onDismissRequest = { onCloseClick() },
@@ -67,9 +78,71 @@ fun PrinterDialog(
             Column(
                 modifier = Modifier
                     .padding(5.dp)
-                    .fillMaxWidth(), horizontalAlignment = Alignment.Start
+                    .verticalScroll(rememberScrollState())
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.spacedBy(7.dp)
             ) {
-
+                TextInput(
+                    value = homeViewModel.reportHeader.value,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(7.dp),
+                    placeholderText = "عنوان گزارش"
+                ){
+                    homeViewModel.reportHeader.value =it
+                }
+                MyCheckbox(
+                    title = "نمایش ستون یاداشت",
+                    checked = homeViewModel.reportIsShowNoteCol.value,
+                    onCheckedChange ={homeViewModel.reportIsShowNoteCol.value=it}
+                )
+                MyCheckbox(
+                    title = "نمایش ستون مدت زمان",
+                    checked = homeViewModel.reportIsShowDurationCol.value,
+                    onCheckedChange ={homeViewModel.reportIsShowDurationCol.value=it}
+                )
+                MyCheckbox(
+                    title = "نمایش ستون تاریخ",
+                    checked = homeViewModel.reportIsShowDateCol.value,
+                    onCheckedChange ={homeViewModel.reportIsShowDateCol.value=it}
+                )
+                MyCheckbox(
+                    title = "نمایش ساعت در تاریخ",
+                    checked = homeViewModel.reportIsShowTime.value,
+                    onCheckedChange ={homeViewModel.reportIsShowTime.value=it}
+                )
+                MyCheckbox(
+                    title = "گروه بندی تاریخ ها در یک ردیف",
+                    checked = homeViewModel.isShowGroupDate.value,
+                    onCheckedChange ={homeViewModel.isShowGroupDate.value=it}
+                )
+                Divider(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(7.dp),
+                    thickness = 1.5.dp,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Column(modifier = Modifier
+                    .padding(4.dp)
+                    .fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(text = " اندازه قلم: ${homeViewModel.reportFontSize.value}")
+                    Slider(
+                        modifier= Modifier
+                            .fillMaxWidth()
+                            .padding(4.dp),
+                        value = homeViewModel.reportFontSize.value.toFloat(),
+                        onValueChange = { homeViewModel.reportFontSize.value = it.toInt() },
+                        colors = SliderDefaults.colors(
+                            thumbColor = MaterialTheme.colorScheme.secondary,
+                            activeTrackColor = MaterialTheme.colorScheme.secondary,
+                            inactiveTrackColor = MaterialTheme.colorScheme.secondaryContainer,
+                        ),
+                        steps = 1,
+                        valueRange = 6f..32f
+                    )
+                }
             }
         }
     )

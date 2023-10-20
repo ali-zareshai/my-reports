@@ -1,7 +1,6 @@
-package ir.esfandune.wave.compose.component.core
+package com.zareshahi.myreport.component
 
 import androidx.compose.animation.*
-import androidx.compose.animation.core.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 

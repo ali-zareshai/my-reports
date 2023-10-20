@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package ir.esfandune.wave.compose.component.core
+package com.zareshahi.myreport.component
 
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.icons.Icons

@@ -1,6 +1,5 @@
 package com.zareshahi.myreport.screen
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -52,19 +51,14 @@ import com.zareshahi.myreport.component.CategoryDropMenu
 import com.zareshahi.myreport.component.FromToDatePicker
 import com.zareshahi.myreport.component.TextInput
 import com.zareshahi.myreport.navigation.Routes
-import com.zareshahi.myreport.util.FilePickerDialog
 import com.zareshahi.myreport.util.PersianDateTime
 import com.zareshahi.myreport.util.PrinterDialog
-import ir.esfandune.wave.compose.component.core.AnimatedContent
-import ir.esfandune.wave.compose.component.core.BottomCard
-import ir.esfandune.wave.compose.component.core.MyCard
-import ir.esfandune.wave.compose.component.core.SimpleTopBar
+import com.zareshahi.myreport.component.AnimatedContent
+import com.zareshahi.myreport.component.BottomCard
+import com.zareshahi.myreport.component.MyCard
+import com.zareshahi.myreport.component.SimpleTopBar
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
-import java.io.File
-import java.net.URI
-import java.nio.file.Files
-import java.nio.file.Paths
 import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -119,9 +113,12 @@ fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel = koin
 @Composable
 fun printDialog(homeViewModel: HomeViewModel = koinViewModel()) {
     val context = LocalContext.current
-    PrinterDialog(onCloseClick = { homeViewModel.isShowPrintDialog.value =false}) {
-        homeViewModel.print(context)
-    }
+    PrinterDialog(
+        onCloseClick = { homeViewModel.isShowPrintDialog.value =false},
+        onConfirmClick = {
+            homeViewModel.print(context)
+        }
+    )
 }
 
 @Composable
