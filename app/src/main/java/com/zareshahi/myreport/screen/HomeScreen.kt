@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -21,6 +22,7 @@ import androidx.compose.material.icons.rounded.Cancel
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material.icons.rounded.FilterAlt
+import androidx.compose.material.icons.rounded.FindInPage
 import androidx.compose.material.icons.rounded.Print
 import androidx.compose.material.icons.rounded.Save
 import androidx.compose.material.icons.rounded.Search
@@ -345,40 +347,45 @@ fun ContentHome(
 ) {
     val reportList = homeViewModel.reportList.collectAsState().value
     Box(modifier = Modifier.padding(paddingValues)) {
-        LazyColumn {
-            itemsIndexed(items = reportList, key = { index, _ -> "$index" }) { index, note ->
-                MyCard(
-                    modifier = Modifier
-                        .padding(7.dp)
-                        .fillMaxWidth()
-                        .clickable {
-                            navController.navigate("${Routes.ADD_REPORT.route}?id=${note.note.id}")
+        if (reportList.isEmpty()){
+            NotFound()
+        }else{
+            LazyColumn {
+                itemsIndexed(items = reportList, key = { index, _ -> "$index" }) { index, note ->
+                    MyCard(
+                        modifier = Modifier
+                            .padding(7.dp)
+                            .fillMaxWidth()
+                            .clickable {
+                                navController.navigate("${Routes.ADD_REPORT.route}?id=${note.note.id}")
+                            }
+                    ) {
+                        Text(
+                            text = note.note.note,
+                            minLines = 2,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(7.dp)
+                        )
+                        Row(modifier = Modifier.padding(7.dp)) {
+                            Text(
+                                text = "${persianDateTime.convertDateToPersianDateWeekDay(note.note.createdAt)}",
+                                modifier = Modifier
+                                    .padding(7.dp)
+                                    .weight(1f)
+                            )
+                            Text(
+                                text = note.category?.name ?: "پیش فرض",
+                                textAlign = TextAlign.End,
+                                modifier = Modifier
+                                    .padding(7.dp)
+                                    .weight(1f)
+                            )
                         }
-                ) {
-                    Text(
-                        text = note.note.note,
-                        minLines = 2,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(7.dp)
-                    )
-                    Row(modifier = Modifier.padding(7.dp)) {
-                        Text(
-                            text = "${persianDateTime.convertDateToPersianDateWeekDay(note.note.createdAt)}",
-                            modifier = Modifier
-                                .padding(7.dp)
-                                .weight(1f)
-                        )
-                        Text(
-                            text = note.category?.name ?: "پیش فرض",
-                            textAlign = TextAlign.End,
-                            modifier = Modifier
-                                .padding(7.dp)
-                                .weight(1f)
-                        )
                     }
                 }
             }
         }
+
     }
 }
 
@@ -394,5 +401,17 @@ private fun SearchFabButtons(homeViewModel: HomeViewModel = koinViewModel()) {
         Icon(
             imageVector = Icons.Rounded.Search, contentDescription = "جستجو"
         )
+    }
+}
+
+@Composable
+private fun  NotFound(){
+    Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+        Icon(
+            imageVector = Icons.Rounded.FindInPage,
+            contentDescription = "موردی پیدا نشد",
+            modifier = Modifier.size(100.dp).padding(7.dp)
+        )
+        Text(text = "موردی پیدا نشد")
     }
 }
