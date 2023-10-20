@@ -2,10 +2,10 @@ package com.zareshahi.myreport.screen
 
 import android.R.attr.name
 import android.content.Context
+import android.net.Uri
 import android.print.PrintAttributes
 import android.print.PrintDocumentAdapter
 import android.print.PrintManager
-import android.util.Log
 import android.view.View
 import android.webkit.WebSettings
 import android.webkit.WebView
@@ -24,6 +24,17 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+import org.apache.poi.hssf.usermodel.HSSFCellStyle
+import org.apache.poi.hssf.usermodel.HSSFWorkbook
+import org.apache.poi.hssf.util.HSSFColor
+import org.apache.poi.ss.usermodel.BorderStyle
+import org.apache.poi.ss.usermodel.Cell
+import org.apache.poi.ss.usermodel.CellStyle
+import org.apache.poi.ss.usermodel.FillPatternType
+import org.apache.poi.ss.usermodel.Font
+import org.apache.poi.ss.usermodel.Workbook
+import java.io.IOException
+import java.io.OutputStream
 import java.time.LocalDate
 
 
@@ -39,6 +50,7 @@ class HomeViewModel(
     val isShowDeleteCategory = mutableStateOf(false)
     val isShowSearchBottomSheet = mutableStateOf(false)
     val isShowPrintDialog = mutableStateOf(false)
+    val isShowExcelDialog = mutableStateOf(false)
     val selectedCategoryForDelete = mutableStateOf<Category?>(null)
     val categoryInputText = mutableStateOf("")
 
@@ -251,5 +263,114 @@ class HomeViewModel(
         val h=sumMinutes/60
         val m=sumMinutes - (h*60)
         return "جمع: $h:$m "
+    }
+
+    fun report2Excel(context: Context,uri: Uri){
+        viewModelScope.launch(Dispatchers.IO){
+            val wb: Workbook = HSSFWorkbook()
+            var cell: Cell? = null
+
+            val bodyFont: Font = wb.createFont()
+            bodyFont.fontHeightInPoints = 12.toShort()
+            bodyFont.fontName = "Tahoma"
+
+            val cs1: CellStyle = wb.createCellStyle()
+            val cs2: CellStyle = wb.createCellStyle()
+            cs1.fillForegroundColor = HSSFColor.LIGHT_YELLOW.index
+            cs2.fillForegroundColor = HSSFColor.LIGHT_GREEN.index
+            cs1.fillPattern = HSSFCellStyle.SOLID_FOREGROUND
+            cs2.fillPattern = HSSFCellStyle.SOLID_FOREGROUND
+            cs1.setFont(bodyFont)
+            cs2.setFont(bodyFont)
+            cs1.borderRight = CellStyle.BORDER_THIN
+            cs2.borderRight = CellStyle.BORDER_THIN
+            cs1.borderBottom = CellStyle.BORDER_THIN
+            cs2.borderBottom = CellStyle.BORDER_THIN
+
+            val font: Font = wb.createFont()
+            font.fontHeightInPoints = 15.toShort()
+            bodyFont.fontName = "Arial"
+
+            val csHDR: CellStyle = wb.createCellStyle()
+            csHDR.fillForegroundColor = HSSFColor.LIME.index
+            csHDR.fillPattern = HSSFCellStyle.SOLID_FOREGROUND
+            csHDR.setFont(font)
+            csHDR.borderRight = CellStyle.BORDER_THIN
+            csHDR.borderBottom = CellStyle.BORDER_THIN
+
+            //New Sheet
+            val sheet1 = wb.createSheet(if (searchCategory.value == null) "پیش فرض" else "${searchCategory.value?.name}")
+            sheet1.isRightToLeft = true
+
+            val row = sheet1.createRow(0)
+
+            cell = row.createCell(0)
+            cell.setCellValue("ردیف")
+            cell.cellStyle = csHDR
+
+            cell = row.createCell(1)
+            cell.setCellValue("تاریخ")
+            cell.cellStyle = csHDR
+
+            cell = row.createCell(2)
+            cell.setCellValue("ساعت")
+            cell.cellStyle = csHDR
+
+            cell = row.createCell(3)
+            cell.setCellValue("موضوع")
+            cell.cellStyle = csHDR
+
+            cell = row.createCell(4)
+            cell.setCellValue("مدت زمان")
+            cell.cellStyle = csHDR
+
+            sheet1.setColumnWidth(0, 2000);
+            sheet1.setColumnWidth(1, 5000)
+            sheet1.setColumnWidth(2, 5000)
+            sheet1.setColumnWidth(3, 15000)
+            sheet1.setColumnWidth(4, 5000)
+
+            _reportList.value.forEachIndexed{index,item->
+                val itmRow = sheet1.createRow(index+1)
+                itmRow.createCell(0).setCellValue("${index+1}")
+
+                itmRow.createCell(1)
+                    .setCellValue(persianDateTime.convertDateToPersianDate(item.note.createdAt,"Y/m/j"))
+                itmRow.createCell(2)
+                    .setCellValue(persianDateTime.convertDateToPersianTime(item.note.createdAt))
+
+                itmRow.createCell(3).setCellValue(item.note.note)
+                itmRow.createCell(4).setCellValue(if (item.note.duration.equals(":")) "" else item.note.duration)
+
+                val styleRow =if (index % 2 == 0) cs1 else cs2
+                itmRow.getCell(0).cellStyle = styleRow
+                itmRow.getCell(1).cellStyle = styleRow
+                itmRow.getCell(2).cellStyle = styleRow
+                itmRow.getCell(3).cellStyle = styleRow
+                itmRow.getCell(4).cellStyle = styleRow
+            }
+            val footerRow = sheet1.createRow(_reportList.value.size+1)
+            footerRow.createCell(0).setCellValue("")
+            footerRow.createCell(1).setCellValue("")
+            footerRow.createCell(2).setCellValue("")
+            footerRow.createCell(3).setCellValue("")
+            footerRow.createCell(4).setCellValue(sumDurations(_reportList.value.map { it.note.duration?:"" }))
+
+            footerRow.getCell(0).cellStyle = csHDR
+            footerRow.getCell(1).cellStyle = csHDR
+            footerRow.getCell(2).cellStyle = csHDR
+            footerRow.getCell(3).cellStyle = csHDR
+            footerRow.getCell(4).cellStyle = csHDR
+
+            var  os:OutputStream?=null
+            try {
+                os = context.contentResolver.openOutputStream(uri)
+                wb.write(os)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                os?.close()
+            }
+        }
     }
 }

@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -36,6 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.zareshahi.myreport.component.MyCheckbox
 import com.zareshahi.myreport.component.TextInput
+import com.zareshahi.myreport.component.WaveRtlCheckbox
 import com.zareshahi.myreport.screen.HomeViewModel
 import org.koin.androidx.compose.koinViewModel
 import java.io.BufferedReader
@@ -213,16 +216,27 @@ fun FilePickerDialog(
                     },
                     placeholder = { Text(text = "نام فایل")}
                 )
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    Text(text = "باز کردن فایل پس از ذخیره")
-                    Checkbox(
-                        checked = openFile.value,
-                        onCheckedChange = { openFile.value = it })
-                }
-
+                WaveRtlCheckbox(
+                    title = "باز کردن فایل پس از ذخیره",
+                    checked =openFile.value ,
+                    onCheckedChange = {openFile.value = it}
+                )
 
             }
         }
     )
 
+}
+
+fun openExcelFile(context: Context, uri: Uri){
+    try {
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.setDataAndType(uri, "application/vnd.ms-excel")
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+        intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION;
+        context.startActivity(intent)
+    }catch (e:Exception){
+        Toast.makeText(context, "برنامه مرتبط پیدا نشد", Toast.LENGTH_LONG).show()
+        Log.e("exception", e.message ?: "--")
+    }
 }

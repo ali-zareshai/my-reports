@@ -17,3 +17,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "My Report"
 include(":app")
+include(":mylibrary")

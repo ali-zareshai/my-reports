@@ -44,11 +44,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.zareshahi.myreport.R
 import com.zareshahi.myreport.component.CategoryDropMenu
 import com.zareshahi.myreport.component.FromToDatePicker
 import com.zareshahi.myreport.component.TextInput
@@ -59,6 +61,8 @@ import com.zareshahi.myreport.component.AnimatedContent
 import com.zareshahi.myreport.component.BottomCard
 import com.zareshahi.myreport.component.MyCard
 import com.zareshahi.myreport.component.SimpleTopBar
+import com.zareshahi.myreport.util.FilePickerDialog
+import com.zareshahi.myreport.util.openExcelFile
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import java.time.LocalDate
@@ -109,6 +113,31 @@ fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel = koin
     AnimatedContent(trueState = homeViewModel.isShowPrintDialog.value) {
         if (it)
             printDialog()
+    }
+    AnimatedContent(trueState = homeViewModel.isShowExcelDialog.value) {
+        if (it)
+            excelDialog()
+    }
+}
+
+@Composable
+fun excelDialog(screenVm: HomeViewModel = koinViewModel()) {
+    val  context = LocalContext.current
+    FilePickerDialog(
+        onCloseClick = { screenVm.isShowExcelDialog.value = false }
+    ) { _, uri, openFileAfterCreate ->
+        uri?.let {
+            screenVm.report2Excel(
+                context=context,
+                uri=it
+            )
+        }
+
+        Toast.makeText(context, "فایل با موفقیت ذخیره شد", Toast.LENGTH_LONG).show()
+        if (uri != null && openFileAfterCreate)
+            openExcelFile(context = context, uri = uri)
+
+        screenVm.isShowExcelDialog.value = false
     }
 }
 
@@ -325,6 +354,14 @@ fun BottomBarHome(navController: NavController, screenVM: HomeViewModel = koinVi
             }) {
                 Icon(imageVector = Icons.Rounded.Print, contentDescription = "چاپ گزارش")
             }
+            IconButton(onClick = {
+                screenVM.isShowExcelDialog.value = true
+            }) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_export_excel),
+                    contentDescription = "اکسل"
+                )
+            }
         },
         floatingActionButton = {
             FloatingActionButton(
@@ -410,7 +447,9 @@ private fun  NotFound(){
         Icon(
             imageVector = Icons.Rounded.FindInPage,
             contentDescription = "موردی پیدا نشد",
-            modifier = Modifier.size(100.dp).padding(7.dp)
+            modifier = Modifier
+                .size(100.dp)
+                .padding(7.dp)
         )
         Text(text = "موردی پیدا نشد")
     }

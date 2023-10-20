@@ -51,7 +51,6 @@ android {
 }
 
 dependencies {
-
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
     implementation("androidx.activity:activity-compose:1.8.0")
@@ -63,6 +62,7 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.7.4")
     implementation("androidx.room:room-runtime:2.5.2")
     implementation("androidx.compose.material:material-icons-extended")
+    implementation(files("/home/ali/AndroidStudioProjects/MyReport/app/libs/poi-3.9-20121203.jar"))
 
     kapt("androidx.room:room-compiler:2.5.2")
     annotationProcessor("androidx.room:room-compiler:2.5.2")
@@ -78,6 +78,8 @@ dependencies {
     implementation("ir.huri:JalaliCalendar:1.3.3")
     implementation("com.marosseleng.android:compose-material3-datetime-pickers:0.7.2")
     implementation("com.github.samanzamani:PersianDate:1.7.1")
+//    implementation("org.apache.poi:poi:5.2.4")
+//    implementation("org.apache.poi:poi-ooxml:5.2.4")
 
 
 
