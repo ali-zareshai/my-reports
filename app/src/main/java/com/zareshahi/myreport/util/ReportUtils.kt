@@ -62,8 +62,8 @@ fun PrinterDialog(
 ) {
     AlertDialog(
         onDismissRequest = { onCloseClick() },
-        icon = { Icon(Icons.Rounded.Print, contentDescription = "print") },
-        title = { Text(text = "چاپ", fontWeight = FontWeight.W300) },
+        icon = { Icon(Icons.Rounded.Print, contentDescription = "چاپ") },
+        title = {  },
         confirmButton = {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                 IconButton(onClick = { onConfirmClick() }) {
@@ -108,14 +108,19 @@ fun PrinterDialog(
                     onCheckedChange ={homeViewModel.reportIsShowDateCol.value=it}
                 )
                 MyCheckbox(
-                    title = "نمایش ساعت در تاریخ",
+                    title = "نمایش ساعت در ستون تاریخ",
                     checked = homeViewModel.reportIsShowTime.value,
                     onCheckedChange ={homeViewModel.reportIsShowTime.value=it}
                 )
                 MyCheckbox(
                     title = "گروه بندی تاریخ ها در یک ردیف",
-                    checked = homeViewModel.isShowGroupDate.value,
-                    onCheckedChange ={homeViewModel.isShowGroupDate.value=it}
+                    checked = homeViewModel.reportIsShowGroupDate.value,
+                    onCheckedChange ={homeViewModel.reportIsShowGroupDate.value=it}
+                )
+                MyCheckbox(
+                    title = "نمایش کلمه جستجو شده",
+                    checked = homeViewModel.reportIsShowSearchedKeyWord.value,
+                    onCheckedChange ={homeViewModel.reportIsShowSearchedKeyWord.value=it}
                 )
                 Divider(
                     modifier = Modifier
@@ -139,8 +144,8 @@ fun PrinterDialog(
                             activeTrackColor = MaterialTheme.colorScheme.secondary,
                             inactiveTrackColor = MaterialTheme.colorScheme.secondaryContainer,
                         ),
-                        steps = 1,
-                        valueRange = 6f..32f
+                        steps = 28,
+                        valueRange = 4f..32f
                     )
                 }
             }

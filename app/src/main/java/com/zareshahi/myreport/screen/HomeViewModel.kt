@@ -56,7 +56,8 @@ class HomeViewModel(
     val reportIsShowDurationCol = mutableStateOf(false)
     val reportIsShowDateCol = mutableStateOf(true)
     val reportIsShowTime = mutableStateOf(false)
-    val isShowGroupDate = mutableStateOf(false)
+    val reportIsShowGroupDate = mutableStateOf(false)
+    val reportIsShowSearchedKeyWord = mutableStateOf(false)
 
     fun search() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -146,7 +147,7 @@ class HomeViewModel(
             .replace(
                 "**category**",
                 if (searchCategory.value == null) "پیش فرض" else "${searchCategory.value?.name}"
-            ).replace("**keyword**", searchText.value)
+            ).replace("**keyword**",if (reportIsShowSearchedKeyWord.value) searchText.value else "")
             .replace("**table_data**", tableData.toString())
             .replace(" **table_header**",tableHeader)
             .replace("**is_show_header**",if (reportHeader.value.isBlank()) "none" else "block")
